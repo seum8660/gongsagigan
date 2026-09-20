@@ -31,8 +31,8 @@
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
-       background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:15px}
-  @media screen{ .wrap,main,body>*:not(script){ zoom:1.08 } }
+       background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:16px}
+  @media screen{ .wrap,main,body>*:not(script){ zoom:1.18 } }
   html[data-theme="dark"] body{background:var(--bg)}
   /* 고대비 강화 모드: 더 진한 선·글자·외곳선 */
   html[data-hc]{--line:#000000;--line2:#e2e2e2;--sub:#000000;--faint:#1f1f1f;--navy2:#000000;--inpbd:#000000;--gold:#003d80;--goldbg:#cfe1f7;--yellow:#dbe8f8;--work:#003d80;--m1:#003d80;--m2:#003d80;--ok:#003d80;--nowork:#5a5650;--prep:#b3afa9;--bg:#ffffff}
@@ -42,7 +42,16 @@
   html[data-hc] .fld input,html[data-hc] .fld select{color:var(--ink)!important;font-weight:700!important}
   html[data-hc] a,html[data-hc] button{text-decoration-thickness:2px}
   html[data-hc] *:focus-visible{outline:3px solid var(--gold)!important;outline-offset:2px}
-  .wrap{max-width:1240px;margin:0 auto;padding:0 20px 60px}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 20px 60px}
+  .layout{display:grid;grid-template-columns:372px minmax(0,1fr);gap:22px;align-items:start}
+  .side{position:sticky;top:72px;max-height:calc(100vh - 88px);overflow:auto;scrollbar-width:thin}
+  .side::-webkit-scrollbar{width:6px}
+  .side::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+  .side .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+  .side .fld.wide{grid-column:1/-1}
+  .side .card{padding:14px!important}
+  .mainpane{min-width:0}
+  @media(max-width:1100px){.layout{grid-template-columns:1fr}.side{position:static;max-height:none;overflow:visible}.side .grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
   /* ===== 표지 / 히어로 ===== */
   .cover{background:var(--cover1);color:var(--coverink);
@@ -71,15 +80,15 @@
   /* ===== 입력 그리드 ===== */
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px}
   .fld{display:flex;flex-direction:column;gap:5px}
-  .fld label{font-size:12.5px;color:var(--sub);font-weight:600}
-  .fld input,.fld select{font:inherit;font-size:14px;font-weight:600;padding:9px 11px;border:1px solid var(--inpbd);
+  .fld label{font-size:13px;color:var(--sub);font-weight:600}
+  .fld input,.fld select{font:inherit;font-size:15px;font-weight:600;padding:9px 11px;border:1px solid var(--inpbd);
          border-radius:8px;background:var(--inpbg);color:var(--ink);width:100%;font-variant-numeric:tabular-nums}
   .fld input:hover,.fld select:hover{background:#e2edfd}
   html[data-theme="dark"] .fld input:hover,html[data-theme="dark"] .fld select:hover{background:rgba(111,168,255,0.26)}
   .fld input:focus,.fld select:focus{outline:none;border-color:var(--m2);box-shadow:0 0 0 3px rgba(49,130,246,.16)}
   .fld input[readonly]{background:var(--line2);color:var(--sub)}
   .fld.wide{grid-column:span 2}
-  .fld .hint{font-size:12px;color:var(--sub)}
+  .fld .hint{font-size:12.5px;color:var(--sub)}
   .chk{display:flex;align-items:center;gap:7px;font-size:13px;padding:7px 0}
   .chk input{width:16px;height:16px;accent-color:var(--m2)}
   .subhead{grid-column:1/-1;font-size:13.5px;font-weight:700;color:var(--navy2);margin-top:6px;
@@ -110,7 +119,7 @@
   .adopt-banner .val{font-size:26px;font-weight:800}
   .adopt-banner .val.hero{font-size:40px}
   .adopt-banner .divider{width:1px;height:38px;background:var(--line)}
-  .adopt-banner .reason{flex:1 1 260px;font-size:12.5px;color:var(--sub);min-width:220px}
+  .adopt-banner .reason{flex:1 1 260px;font-size:13.5px;color:var(--sub);min-width:220px}
 
   /* ===== 차트 ===== */
   .chart-wrap{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
@@ -159,10 +168,10 @@
          border-radius:10px;margin:8px 0}
   .mini{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
   .mini .m{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 6px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}
-  .mini .m .k{font-size:11px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;max-width:100%} .mini .m .v{font-size:15.5px;font-weight:800;color:var(--navy);white-space:normal;word-break:keep-all;line-height:1.3}
+  .mini .m .k{font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;max-width:100%} .mini .m .v{font-size:17px;font-weight:800;color:var(--navy);white-space:normal;word-break:keep-all;line-height:1.3}
   
   @media(max-width:1000px){#nwKpi{grid-template-columns:repeat(2,1fr)!important}#nwFactors>div:nth-child(2){grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-  .foot{margin-top:30px;font-size:12px;color:var(--sub);line-height:1.8;border-top:1px solid var(--line);padding-top:16px}
+  .foot{margin-top:30px;font-size:13px;color:var(--sub);line-height:1.8;border-top:1px solid var(--line);padding-top:16px}
   @media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}.methods{grid-template-columns:1fr}.mini{grid-template-columns:repeat(5,minmax(0,1fr))}
     .chart-wrap{grid-template-columns:1fr}.f3grid{grid-template-columns:1fr}.fld.wide{grid-column:span 2}}
 
@@ -171,7 +180,7 @@
     html,body{background:#fff!important;font-size:11pt!important;color:#111!important}
     .wrap,main,body>*:not(script){zoom:0.92!important}
     .wrap{max-width:none!important;padding:0!important}
-    #resetBtn,#printBtn,#pvBtn,#pvOverlay,#themeToggle,#hcToggle,.tabs,.tabbar,#__tweaks{display:none!important}
+    #resetBtn,#printBtn,#pvBtn,#docTools,#pvOverlay,#themeToggle,#hcToggle,.copybar,.tabs,.tabbar,#__tweaks{display:none!important}
     .cover{padding:16mm 0 8mm!important;border-bottom:1px solid #d0d7e2!important}
     .cover h1{font-size:22pt!important}
     .cover .sub,.cover-meta{font-size:10.5pt!important}
@@ -249,6 +258,9 @@
     body>*:last-child{margin-bottom:0!important;padding-bottom:0!important}
     /* 페이지 폭 맞춤: 넓은 격자·표·차트 자동 축소/재배치 */
     .wrap,.cover .inner{max-width:none!important;width:100%!important;padding-left:0!important;padding-right:0!important}
+    .layout{display:block!important}
+    .side{position:static!important;max-height:none!important;overflow:visible!important}
+    .side .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
     .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
     .fld.wide{grid-column:span 3!important}
     .chart-wrap{grid-template-columns:1fr!important;padding:8px!important}
@@ -284,15 +296,15 @@
   .cover .sub,.cover-meta{color:var(--sub)!important;font-size:14px;}
   .cover-meta b{color:var(--ink)!important;}
   .cover-legal{border-top:1px solid var(--line)!important;color:var(--sub)!important;font-size:11.5px;}
-  .sec-title{font-size:12px!important;font-weight:700!important;letter-spacing:.08em;text-transform:uppercase;
+  .sec-title{font-size:13px!important;font-weight:700!important;letter-spacing:.08em;text-transform:uppercase;
     color:var(--ink)!important;border-bottom:0!important;padding-bottom:0!important;margin-bottom:10px!important;}
   .sec-title .n{width:18px!important;height:18px!important;border-radius:4px!important;background:var(--goldbg)!important;
     color:var(--gold)!important;font-size:11px!important;}
-  .sec-title small{color:var(--faint)!important;letter-spacing:0;text-transform:none;font-size:12px;}
+  .sec-title small{color:var(--faint)!important;letter-spacing:0;text-transform:none;font-size:13px;}
   #resetBtn{border:1px solid var(--line)!important;border-radius:100px!important;background:var(--card)!important;
     color:var(--sub)!important;font-weight:500!important;font-size:12.5px!important;box-shadow:none!important;}
   .card{border:1px solid var(--line)!important;border-radius:12px!important;box-shadow:none!important;padding:18px!important;}
-  .fld label{font-size:11.5px!important;font-weight:700!important;color:var(--ink)!important;letter-spacing:.02em;}
+  .fld label{font-size:12.5px!important;font-weight:700!important;color:var(--ink)!important;letter-spacing:.02em;}
   .fld input,.fld select{background:var(--card)!important;border:1px solid var(--inpbd)!important;
     border-radius:8px!important;color:#0a4a8c!important;font-weight:600!important;}
   html[data-theme="dark"] .fld input,html[data-theme="dark"] .fld select{color:#9fcbff!important;}
@@ -303,21 +315,21 @@
   .tabbar{display:flex;gap:22px!important;border-bottom:1px solid var(--line);background:none!important;
     padding:0!important;border-radius:0!important;box-shadow:none!important;margin-bottom:16px;}
   .tabbar .tab{border:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;
-    color:var(--sub)!important;font-size:14px!important;font-weight:500!important;padding:0 0 11px!important;position:relative;}
-  .tabbar .tab:hover{color:var(--ink)!important;}
-  .tabbar .tab.active{color:var(--ink)!important;font-weight:700!important;}
-  .tabbar .tab.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ink);}
+    color:var(--sub)!important;font-size:15px!important;font-weight:500!important;padding:0 0 11px!important;position:relative;}
+  .tabbar .tab:hover{color:var(--gold)!important;}
+  .tabbar .tab.active{color:var(--gold)!important;font-weight:700!important;}
+  .tabbar .tab.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--gold);}
   /* 표 */
   table{border-collapse:collapse;}
-  th{background:var(--line2)!important;color:var(--ink)!important;font-size:11.5px!important;font-weight:700!important;
+  th{background:var(--line2)!important;color:var(--ink)!important;font-size:12.5px!important;font-weight:700!important;
     border:0!important;border-bottom:1px solid var(--line)!important;padding:9px 11px!important;}
   td{border:0!important;border-bottom:1px solid var(--line)!important;padding:10px 11px!important;
-    font-size:13px;color:var(--navy2);font-variant-numeric:tabular-nums;}
+    font-size:14px;color:var(--navy2);font-variant-numeric:tabular-nums;}
   tbody tr:hover td{background:var(--line2);}
   tfoot td,tr.sum td,tr.total td{background:var(--line2)!important;border-top:1px solid var(--line)!important;
     font-weight:700!important;color:var(--ink)!important;}
   .note{background:var(--line2)!important;border:0!important;
-    border-radius:8px!important;color:var(--navy2)!important;font-size:12.5px!important;box-shadow:none!important;}
+    border-radius:8px!important;color:var(--navy2)!important;font-size:13.5px!important;box-shadow:none!important;}
   .adopt-banner{border-radius:8px!important;box-shadow:none!important;}
   details summary{color:var(--sub)!important;font-weight:700;}
   .gt-head,.gt-row{display:grid;grid-template-columns:190px minmax(420px,1fr) 62px;gap:10px;align-items:center;}
@@ -349,7 +361,7 @@
   @media(max-width:860px){.methods{grid-template-columns:1fr;}}
   .methods>*{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:12px!important;
     box-shadow:none!important;padding:14px 16px!important;}
-  .methods .m-h,.methods .m-t{font-size:11.5px!important;font-weight:500!important;color:var(--sub)!important;}
+  .methods .m-h,.methods .m-t{font-size:12.5px!important;font-weight:500!important;color:var(--sub)!important;}
   .methods .m-v,.methods .big,.methods .val{font-size:24px!important;font-weight:700!important;
     letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)!important;}
   .methods .adopted,.methods .on,.methods [data-adopt="1"]{border-color:var(--gold)!important;background:var(--goldbg)!important;}
@@ -391,10 +403,12 @@
 </div>
 
 <div class="wrap">
-
+ <div id="docTools" style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 16px;padding:10px 0;background:var(--bg);border-bottom:1px solid var(--line)"><span style="font-size:13px;font-weight:700;color:var(--sub);margin-right:auto">공사기간 산정 검토</span><span id="toolSlot" style="display:flex;gap:8px"></span><button type="button" id="resetBtn" style="background:var(--card);border:1px solid var(--line);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap">↺ 초기화</button><button type="button" id="pvBtn" style="background:var(--card);border:1px solid var(--line);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap">PDF 미리보기</button><button type="button" id="printBtn" style="background:var(--ink);border:1px solid var(--ink);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap">PDF 출력하기</button></div>
+ <div class="layout">
   <!-- ===== 1. 기본정보 입력 ===== -->
+  <aside class="side">
   <section>
-    <div class="sec-title"><span class="n">1</span>공사 기본정보 입력 <button type="button" id="resetBtn" style="margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:var(--sub);cursor:pointer">↺ 초기화</button><button type="button" id="pvBtn" style="margin-left:6px;background:var(--card);border:1px solid var(--line);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:var(--sub);cursor:pointer">PDF 미리보기</button><button type="button" id="printBtn" style="margin-left:6px;background:var(--ink);border:1px solid var(--ink);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:#fff;cursor:pointer">PDF 출력하기</button></div>
+    <div class="sec-title"><span class="n">1</span>공사 기본정보 입력 </div>
     <div class="card">
       <div class="grid">
         <div class="fld wide"><label>공사명</label><input id="i_name" value="" placeholder="00초 신축공사"></div>
@@ -424,8 +438,10 @@
       </div>
     </div>
   </section>
+  </aside>
 
   <!-- ===== 2. 검토 결과 (탭 구성) ===== -->
+  <main class="mainpane">
   <section>
     <div class="sec-title"><span class="n">2</span>공사기간 검토 결과 <small>종합 비교 및 검토안별 상세 산출 · 탭 전환</small></div>
     <div class="tabbar" id="mainTabs">
@@ -625,6 +641,8 @@
       </div>
     </div>
   </section>
+  </main>
+ </div>
 
   <div class="foot">
     ※ 공사기간 = ① 준비기간 + ② 작업일수 + ③ 비작업일수 + ④ 정리기간 (가이드라인 본문 산정식) · 준비·정리기간에는 비작업일수 미계상<br>
@@ -1071,9 +1089,10 @@ function render(){
  }
 
  // 채택안 = 최소
- const arr=[{k:'검토1안',cls:'m1',v:r1.tot},{k:'검토2안',cls:'m3',v:r3.tot}].filter(a=>a.v>0);
- const minV=arr.length?Math.min.apply(null,arr.map(a=>a.v)):0;
- const adopted=arr.find(a=>a.v===minV)||{k:'—',cls:'m1',v:0};
+ const arr=[{k:'검토1안',cls:'m1',v:r1.tot,ok:r1.tot>0},{k:'검토2안',cls:'m3',v:r3.tot,ok:!!r3.ok&&r3.tot>0}];
+ const usable=arr.filter(a=>a.ok);
+ const minV=usable.length?Math.min.apply(null,usable.map(a=>a.v)):0;
+ const adopted=usable.find(a=>a.v===minV)||{k:'—',cls:'m1',v:0};
 
  // 3안 카드
  const meta={
@@ -1083,26 +1102,29 @@ function render(){
     rows:[['① 산정공식 Y',r3.Y],['② 준비기간',r3.prep],['③ 정리기간',r3.fin]].concat(r3.extra?[['④ 도서지역 할증',r3.extra]]:[])},
  };
  $('methods').innerHTML=arr.map(a=>{
-  const m=meta[a.k]; const isA=a.v===minV;
-  return `<div class="mcard ${a.cls}${isA?' adopted':''}">
-    ${isA?'<span class="adopt-badge">★ 채택안</span>':''}
+  const m=meta[a.k]; const isA=a.ok&&a.v===minV&&usable.length>0;
+  const diff=(a.ok&&minV&&a.v!==minV)?('<span style="font-size:11.5px;color:var(--sub);font-weight:600">채택안 대비 +'+fmt(a.v-minV)+'일</span>'):'';
+  return `<div class="mcard ${a.cls}${isA?' adopted':''}"${a.ok?'':' style="opacity:.75"'}>
+    ${isA?'<span class="adopt-badge">★ 채택안</span>':(a.ok?'':'<span class="adopt-badge" style="background:var(--line2);color:var(--sub)">산정 불가</span>')}
     <div class="tag">${m.tag}</div>
     <h3>${a.k}</h3><div class="desc">${m.desc}</div>
-    <div style="display:flex;align-items:baseline;justify-content:flex-end;gap:10px"><div class="big">${fmt(a.v)}<small> 일</small></div><div class="mo">약 ${(a.v/30).toFixed(1)}개월</div></div>
-    <div class="brk">${m.rows.map(r=>`<div class="row"><span>${r[0]}</span><b>${fmt(r[1])} 일</b></div>`).join('')}</div>
+    <div style="display:flex;align-items:baseline;justify-content:flex-end;gap:10px">${diff}<div class="big">${a.ok?fmt(a.v):'—'}<small> 일</small></div><div class="mo">${a.ok?'약 '+(a.v/30).toFixed(1)+'개월':(a.k==='검토2안'?'총공사비 입력 필요':'물량 입력 필요')}</div></div>
+    <div class="brk">${m.rows.map(r=>`<div class="row"><span>${r[0]}</span><b>${a.ok?fmt(r[1])+' 일':'—'}</b></div>`).join('')}${(a.k==='검토2안'&&r3.warn)?'<div class="row" style="color:var(--gold);font-weight:700"><span>⚠ '+r3.warn+'</span><b></b></div>':''}</div>
   </div>`;
  }).join('');
 
  // 채택 배너
- const workAd = adopted.k==='검토1안'?r1.work : r3.Y;
+ const workAd = adopted.k==='검토2안'?r3.Y : r1.work;
  const prepfin = minV-workAd;
+ const cmp = arr.map(a=>a.k+' '+(a.ok?fmt(a.v)+'일':'산정 불가')).join(' · ');
+ const gap = usable.length>1?(' 두 안의 차이는 '+fmt(Math.abs(r1.tot-r3.tot))+'일입니다.'):'';
  $('adoptBanner').innerHTML=`
    <div><div class="lbl">채택 검토안</div><div class="val">${adopted.k}</div></div>
    <div class="divider"></div>
    <div><div class="lbl">총 공사기간</div><div class="val hero">${fmt(minV)}일 <span style="font-size:16px;color:var(--sub)">(약 ${(minV/30).toFixed(1)}개월)</span></div></div>
    <div class="divider"></div>
    <div><div class="lbl">${adopted.k==='검토2안'?'산정식 Y(비작업 포함)':'작업일수'} / 준비·정리</div><div class="val">${fmt(workAd)}일 <span style="font-size:14px;color:var(--sub)">(${(workAd/minV*100).toFixed(1)}%)</span> · ${fmt(prepfin)}일</div></div>
-   <div class="reason">2개 검토안 중 총 공사기간이 가장 짧아, 적정 공기 확보와 과다 산정 방지 측면에서 유리하여 <b>${adopted.k}</b>을(를) 채택함. (비교: 검토1안 ${fmt(r1.tot)}일 · 검토2안 ${fmt(r3.tot)}일)</div>`;
+   <div class="reason">${usable.length>1?('2개 검토안 중 총 공사기간이 가장 짧아, 적정 공기 확보와 과다 산정 방지 측면에서 유리하여 <b>'+adopted.k+'</b>을(를) 채택함.'+gap):(usable.length===1?('산정 가능한 검토안이 <b>'+adopted.k+'</b> 하나이므로 해당 안을 채택함.'):'입력값이 부족하여 채택안을 산정할 수 없습니다.')} (비교: ${cmp})</div>`;
 
  // 검토안별 탭 상단 요약 헤더
  const headHTML=(name,method,tot,color,isA)=>`<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:16px${isA?';box-shadow:0 4px 16px rgba(184,134,11,.15)':''}">
@@ -1286,7 +1308,7 @@ if($('i_region')) $('i_region').addEventListener('change',()=>{ const n=regionFi
  if(pvb) pvb.addEventListener('click',function(){
    var clone=document.documentElement.cloneNode(true);
    syncFormAttrs(clone);
-   clone.querySelectorAll('#pvOverlay,#resetBtn,#printBtn,#pvBtn,#themeToggle,#hcToggle').forEach(function(e){ e.remove(); });
+   clone.querySelectorAll('#pvOverlay,#docTools,.copybar,#resetBtn,#printBtn,#pvBtn,#themeToggle,#hcToggle').forEach(function(e){ e.remove(); });
    clone.querySelectorAll('details').forEach(function(e){ e.setAttribute('open',''); });
    clone.querySelectorAll('script').forEach(function(e){ e.remove(); });
    var pageCss='@page{size:A4 portrait;margin:30mm 15mm 15mm 20mm;'+
@@ -1458,7 +1480,12 @@ render();
  var hc=document.createElement('button'); hc.type='button'; hc.id='hcToggle'; hc.textContent='고대비';
  hc.style.cssText=b.style.cssText+';right:auto;left:16px'; hc.setAttribute('aria-pressed','false');
  b.style.display='inline-block'; hc.style.position='static'; b.style.position='static';
- var grp=document.createElement('div'); grp.style.cssText='position:fixed;top:16px;right:16px;z-index:40;display:flex;gap:8px'; b.parentNode.insertBefore(grp,b); grp.appendChild(hc); grp.appendChild(b);
+ var slot=document.getElementById('toolSlot');
+ var grp=slot||document.createElement('div');
+ if(!slot){ grp.style.cssText='position:fixed;top:16px;right:16px;z-index:40;display:flex;gap:8px'; b.parentNode.insertBefore(grp,b); }
+ hc.style.cssText='background:var(--card);border:1px solid var(--line);border-radius:100px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap';
+ b.style.cssText=hc.style.cssText;
+ grp.appendChild(hc); grp.appendChild(b);
  var on=localStorage.getItem('ctd_hc')==='1'; function apply(){ root.toggleAttribute('data-hc',on); hc.setAttribute('aria-pressed',on?'true':'false'); hc.style.fontWeight=on?'800':'700'; hc.style.borderColor=on?'var(--ink)':'var(--line)'; }
  hc.addEventListener('click',function(){ on=!on; localStorage.setItem('ctd_hc',on?'1':'0'); apply(); }); apply();})();
 </script>
@@ -1521,6 +1548,95 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
  apply();
  try{ window.parent.postMessage({type:'__edit_mode_available'},'*'); }catch(e){}
 })();
+/* ---- 표 복사 (엑셀·워드 붙여넣기용) ---- */
+(function(){
+ function tableTSV(tb){
+   return [...tb.querySelectorAll('tr')].map(function(tr){
+     return [...tr.children].map(function(c){
+       var inp=c.querySelector('input,select');
+       var v=inp?(inp.tagName==='SELECT'?inp.options[inp.selectedIndex].text:inp.value):c.innerText;
+       return String(v).replace(/\s+/g,' ').trim();
+     }).join('\t');
+   }).join('\n');
+ }
+ function tableHTML(tb){
+   var c=tb.cloneNode(true);
+   c.querySelectorAll('input,select').forEach(function(e){
+     var v=e.tagName==='SELECT'?e.options[e.selectedIndex].text:e.value;
+     var s=document.createElement('span'); s.textContent=v; e.replaceWith(s);
+   });
+   c.querySelectorAll('button').forEach(function(e){ e.remove(); });
+   c.setAttribute('border','1'); c.setAttribute('cellspacing','0'); c.setAttribute('cellpadding','4');
+   c.setAttribute('style','border-collapse:collapse;border:1px solid #333;mso-border-alt:solid #333 .5pt;font-family:Malgun Gothic,sans-serif;font-size:10pt');
+   c.querySelectorAll('th').forEach(function(e){ e.removeAttribute('class');
+     e.setAttribute('style','border:1px solid #333;mso-border-alt:solid #333 .5pt;background:#e9eef5;mso-pattern:#e9eef5 none;padding:4px 6px;font-weight:700;text-align:center;vertical-align:middle;white-space:nowrap'); });
+   c.querySelectorAll('td').forEach(function(e){ e.removeAttribute('class');
+     var t=(e.innerText||'').trim(); var num=/^[-−+]?[\d,.]+%?$/.test(t);
+     e.setAttribute('style','border:1px solid #333;mso-border-alt:solid #333 .5pt;padding:4px 6px;vertical-align:middle;text-align:'+(num?'right':'left')+(num?';mso-number-format:"\\@"':'')); });
+   c.querySelectorAll('tfoot td,tr.sum td,tr.total td').forEach(function(e){
+     e.setAttribute('style',e.getAttribute('style')+';background:#f2f4f7;mso-pattern:#f2f4f7 none;font-weight:700'); });
+   return c.outerHTML;
+ }
+ var PENDING=null;
+ document.addEventListener('copy',function(e){
+   if(!PENDING) return;
+   e.preventDefault();
+   e.clipboardData.setData('text/html',PENDING.html);
+   e.clipboardData.setData('text/plain',PENDING.tsv);
+   PENDING=null;
+ },true);
+ function copyRich(tb){
+   // 선택 영역 복사: 워드·엑셀·한글에서 서식(테두리)이 가장 잘 유지되는 방식
+   var host=document.createElement('div');
+   host.setAttribute('contenteditable','true');
+   host.style.cssText='position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1;white-space:normal';
+   host.innerHTML=tableHTML(tb);
+   PENDING={html:tableHTML(tb),tsv:tableTSV(tb)};
+   document.body.appendChild(host);
+   var sel=window.getSelection(), rng=document.createRange();
+   rng.selectNodeContents(host); sel.removeAllRanges(); sel.addRange(rng);
+   var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+   sel.removeAllRanges(); host.remove(); PENDING=null;
+   return ok;
+ }
+ async function copyTable(tb,btn){
+   var done=copyRich(tb);
+   if(!done){
+     var html=tableHTML(tb), tsv=tableTSV(tb);
+     try{
+       if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
+         await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([tsv],{type:'text/plain'})})]);
+         done=true;
+       }
+     }catch(e){}
+   }
+   if(!done){ try{ await navigator.clipboard.writeText(tableTSV(tb)); done=true; }catch(e){} }
+   var t=btn.textContent; btn.textContent=done?'✓ 복사됨':'복사 실패'; setTimeout(function(){ btn.textContent=t; },1400);
+ }
+ function addBtns(){
+   document.querySelectorAll('table').forEach(function(tb){ try{
+     if(tb.dataset.copyBound) return;
+     if(tb.closest('#docTools')) return;
+     var anchor=tb.closest('.tbl-scroll')||tb;
+     var host=anchor.parentElement; if(!host) return;
+     var bar=document.createElement('div');
+     bar.className='copybar';
+     bar.style.cssText='display:flex;justify-content:flex-end;margin:0 0 6px';
+     var b=document.createElement('button');
+     b.type='button'; b.textContent='⧉ 표 복사';
+     b.title='엑셀·워드에 붙여넣을 수 있도록 표를 복사합니다';
+     b.style.cssText='background:var(--card);border:1px solid var(--line);border-radius:100px;padding:4px 12px;font:inherit;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer';
+     b.addEventListener('click',function(e){ e.preventDefault(); copyTable(tb,b); });
+     bar.appendChild(b);
+     tb.dataset.copyBound='1';
+     host.insertBefore(bar,anchor);
+   }catch(e){} });
+ }
+ addBtns();
+ var mo=new MutationObserver(function(){ addBtns(); });
+ mo.observe(document.body,{childList:true,subtree:true});
+})();
+
 </script>
 </body>
 </html>
