@@ -6,15 +6,17 @@ const TH={rain:5,wind:15,hot:33,cold:0,snow:5}, MD=[31,28,31,30,31,30,31,31,30,3
 const kst=new Date(Date.now()+9*3600e3); const end=new Date(Date.UTC(kst.getUTCFullYear(),kst.getUTCMonth(),kst.getUTCDate()-1));
 const start=new Date(end); start.setUTCFullYear(start.getUTCFullYear()-10); start.setUTCDate(start.getUTCDate()+1);
 const ymd=d=>d.toISOString().slice(0,10).replace(/-/g,'');
-const key=KEY.includes('%')?KEY:encodeURIComponent(KEY);
+const key=KEY.trim().includes('%')?KEY.trim():encodeURIComponent(KEY.trim());
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function get(code,page){
   const url='https://apis.data.go.kr/1360000/AsosDalyInfoService/getWthrDataList?serviceKey='+key+'&pageNo='+page+'&numOfRows=999&dataType=JSON&dataCd=ASOS&dateCd=DAY&startDt='+ymd(start)+'&endDt='+ymd(end)+'&stnIds='+code;
   for(let i=0;i<4;i++){
     try{ const t=await (await fetch(url)).text(); let j; try{ j=JSON.parse(t); }catch(e){ throw new Error(t.slice(0,200)); }
-      const h=j.response.header; if(h.resultCode==='03') return {total:0,items:[]}; if(h.resultCode!=='00') throw new Error(h.resultCode+' '+h.resultMsg);
-      let it=(j.response.body.items&&j.response.body.items.item)||[]; if(!Array.isArray(it)) it=[it];
-      return {total:+j.response.body.totalCount||0,items:it};
+      const R=j.response||j; const h=R.header||(R.resultCode?R:null);
+      if(!h) throw new Error('예상 밖 응답: '+t.slice(0,300));
+      if(h.resultCode==='03') return {total:0,items:[]}; if(h.resultCode!=='00') throw new Error(h.resultCode+' '+h.resultMsg);
+      const b=R.body||{}; let it=(b.items&&b.items.item)||[]; if(!Array.isArray(it)) it=[it];
+      return {total:+b.totalCount||0,items:it};
     }catch(e){ if(i===3) throw e; await sleep(3000*(i+1)); }
   }
 }
@@ -41,7 +43,7 @@ let old={stations:{}}; try{ old=JSON.parse(fs.readFileSync('wx.json','utf8')); }
 const out={updated:end.toISOString().slice(0,10),src:'기상청 ASOS 일자료',stations:{}}; let ok=0, fail=[];
 for(const [name,code] of STN){
   try{ out.stations[name]=await station(code); ok++; console.log('OK',name,code); }
-  catch(e){ fail.push(name+'('+e.message+')'); if(old.stations[name]) out.stations[name]=old.stations[name]; console.log('FAIL',name,code,e.message); }
+  catch(e){ fail.push(name+'('+e.message+')'); if(!ok&&fail.length>=3){ console.error('처음 3개 지점 연속 실패 — 중단합니다.\n'+e.message); process.exit(1); } if(old.stations[name]) out.stations[name]=old.stations[name]; console.log('FAIL',name,code,e.message); }
 }
 console.log('성공',ok,'/',STN.length, fail.length?'실패: '+fail.join(', '):'');
 if(!ok){ console.error('모든 지점 실패 — 인증키 또는 서비스 승인을 확인하세요.'); process.exit(1); }
