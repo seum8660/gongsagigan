@@ -47,6 +47,7 @@ function parseTyp01(t){
   return out;
 }
 const HUB='https://apihub.kma.go.kr/api/typ01/url/';
+let old={stations:{}}; try{ old=JSON.parse(fs.readFileSync('wx.json','utf8')); }catch(e){}
 // 기간 조회: 지점별·연도별
 async function viaSfcdd3(code){
   let rows=[]; const y0=START.getUTCFullYear(), y1=END.getUTCFullYear();
@@ -58,15 +59,20 @@ async function viaSfcdd3(code){
 }
 // 일별 조회: 하루씩 전 지점 (약 3,650회)
 async function viaSfcddAll(){
-  const days=[]; for(let d=new Date(START);d<=END;d.setUTCDate(d.getUTCDate()+1)) days.push(ymd(d));
-  const by={}; let done=0, bad=0;
+  // 이어받기: 기존 wx.json 의 마지막 날 다음부터만 조회
+  const by=oldRows(); let from=new Date(START);
+  const last=Object.values(by).map(a=>a.length?a[a.length-1].tm:'').filter(Boolean).sort()[0];
+  if(last){ const d=new Date(Date.parse(last)+864e5); if(d>from) from=d; console.log('기존 자료 '+last+'까지 있음 → 이후만 조회'); }
+  const days=[]; for(let d=new Date(from);d<=END;d.setUTCDate(d.getUTCDate()+1)) days.push(ymd(d));
+  console.log('조회할 날짜',days.length,'일'); let done=0, bad=0;
   const work=async day=>{
     try{ parseTyp01(await fetchText(HUB+'kma_sfcdd.php?tm='+day+'&stn=0&help=1&authKey='+encodeURIComponent(KEY))).forEach(r=>(by[r.code]||(by[r.code]=[])).push(r)); }
     catch(e){ if(e.fatal&&done<5) throw e; bad++; }
     if(++done%200===0) console.log('일별 조회',done,'/',days.length);
   };
-  for(let i=0;i<days.length;i+=6) await Promise.all(days.slice(i,i+6).map(work));
+  for(let i=0;i<days.length;i+=12) await Promise.all(days.slice(i,i+12).map(work));
   if(bad) console.log('실패한 날짜',bad,'일');
+  const s0=START.toISOString().slice(0,10); for(const k in by) by[k]=by[k].filter(r=>r.tm>=s0);
   return by;
 }
 // 공공데이터포털
@@ -81,6 +87,15 @@ async function viaDatago(code){
   const f=await get(1); let items=f.items; for(let p=2;p<=Math.ceil(f.total/999);p++) items=items.concat((await get(p)).items);
   const n=v=>{ if(v==null||v==='') return null; const x=parseFloat(v); return isNaN(x)?null:x; };
   return items.map(it=>({code,tm:String(it.tm).slice(0,10),tmin:n(it.minTa),tmax:n(it.maxTa),rn:n(it.sumRn)||0,ws:n(it.maxInsWs),sd:n(it.ddMefs)||0}));
+}
+// 기존 wx.json 일자료 → 행
+function oldRows(){
+  const by={};
+  for(const n in old.stations){ const d=old.stations[n]&&old.stations[n].daily; if(!d||!d.r) continue;
+    const P=x=>x.split(',').map(v=>v==='x'?null:+v/10); const tn=P(d.tmin),tx=P(d.tmax),rn=P(d.rn),ws=P(d.ws),sd=P(d.sd);
+    const rows=[]; let i=0; d.r.forEach(([st,c])=>{ const t=new Date(st+'T00:00:00Z'); for(let k=0;k<c;k++){ rows.push({code:d.code,tm:t.toISOString().slice(0,10),tmin:tn[i],tmax:tx[i],rn:rn[i]||0,ws:ws[i],sd:sd[i]||0}); t.setUTCDate(t.getUTCDate()+1); i++; } });
+    by[d.code]=rows; }
+  return by;
 }
 // ---- 집계 ----
 function build(code,rows){
@@ -99,7 +114,6 @@ function build(code,rows){
   return {agg,daily};
 }
 // ---- 실행 ----
-let old={stations:{}}; try{ old=JSON.parse(fs.readFileSync('wx.json','utf8')); }catch(e){}
 const out={updated:END.toISOString().slice(0,10),src:'기상청 ASOS 일자료',stations:{}}; let ok=0; const fail=[];
 const put=(name,code,rows)=>{ try{ out.stations[name]=build(code,rows); ok++; console.log('OK',name,code); }catch(e){ fail.push(name+'('+e.message+')'); if(old.stations[name]) out.stations[name]=old.stations[name]; console.log('FAIL',name,code,e.message); } };
 async function perStation(fn,label){
@@ -109,7 +123,7 @@ async function perStation(fn,label){
   }
   console.log('['+label+'] 성공',ok,'/',STN.length);
 }
-const order=FORCE?[FORCE]:['sfcdd3','sfcdd','datago']; let used=null;
+const order=FORCE?[FORCE]:(Object.keys(old.stations).length?['sfcdd','sfcdd3','datago']:['sfcdd3','sfcdd','datago']); let used=null;
 for(const m of order){
   try{
     console.log('시도:',m);
