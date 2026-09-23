@@ -2,7 +2,7 @@ name: 기상청 자료 갱신
 on:
   schedule:
     - cron: '0 18 1 * *'   # 매월 2일 03:00 (한국시간)
-  workflow_dispatch:
+  workflow_dispatch:        # Actions 탭에서 수동 실행
 permissions:
   contents: write
 jobs:
