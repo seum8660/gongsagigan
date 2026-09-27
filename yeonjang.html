@@ -262,7 +262,7 @@ footer{background:#fff;border-top:1px solid var(--line-faint)}
       </div>
       <div class="wx-scroll"><div class="wx-cal" id="wx-cal"></div></div>
       <div class="cmp" id="wx-cmp"></div>
-      <label class="apply"><input type="checkbox" id="w-apply" checked> 평년 초과 일수를 이상기상(불가항력) 인정일수에 반영</label>
+      <div class="note" id="wx-link"></div>
       <div class="note" id="wx-note"></div>
     </div>
   </section>
@@ -303,7 +303,7 @@ function toast(t){ const el=document.createElement('div'); el.className='toast';
 const TYPES={
   owner:{n:'발주기관 책임',d:'설계변경·공사중지 지시·용지 미확보 등',ext:'o',ld:'o',adj:'o'},
   supply:{n:'관급자재 공급 지연',d:'관급자재·지급자재 납품 지연',ext:'o',ld:'o',adj:'o'},
-  force:{n:'불가항력',d:'태풍·홍수·지진 등 천재지변',ext:'o',ld:'o',adj:'c'},
+  force:{n:'기상여건(불가항력)',d:'강우·강풍·혹서·한파·강설 등 이상기상 — STEP 4 기상 검토와 연계',ext:'o',ld:'o',adj:'c'},
   nofault:{n:'계약상대자 책임 없는 중단',d:'민원·인허가 지연 등',ext:'o',ld:'o',adj:'c'},
   contractor:{n:'계약상대자 책임',d:'인력·장비·자재 수급, 부실시공 재시공',ext:'x',ld:'x',adj:'x'}
 };
@@ -318,6 +318,7 @@ const SAMPLE={
   rows:[
     {t:'owner',desc:'지붕 구조 설계변경(철골 보강)',s:'2026-06-10',e:'2026-06-30',req:21,ok:'인정',cp:true,as:'2026-06-10',ae:'2026-06-30'},
     {t:'supply',desc:'관급 창호 납품 지연',s:'2026-06-25',e:'2026-07-10',req:16,ok:'인정',cp:true,as:'2026-06-25',ae:'2026-07-10'},
+    {t:'force',desc:'7~9월 집중호우·폭염',s:'2026-07-11',e:'2026-09-17',req:12,ok:'인정',cp:true,as:'',ae:''},
     {t:'contractor',desc:'철근공 인력 수급 차질',s:'2026-08-03',e:'2026-08-09',req:7,ok:'불인정',cp:true,as:'',ae:''}
   ],
   w:{stn:'목포',s:'2026-07-11',e:'2026-09-17',req:12,apply:true,th:{rain:5,wind:15,hot:33,cold:0,snow:5}},
@@ -328,6 +329,9 @@ let S;
 function load(){ try{ const j=localStorage.getItem('extReview.v1'); if(j) return JSON.parse(j); }catch(e){} return JSON.parse(JSON.stringify(SAMPLE)); }
 function save(){ try{ localStorage.setItem('extReview.v1',JSON.stringify(S)); }catch(e){} }
 S=load(); if(!S.opt) S.opt={noWe:false};
+const wxRow=()=>S.rows.find(r=>r.t==='force');
+if(!wxRow()&&S.w&&S.w.s&&S.w.e&&S.w.apply!==false&&S.w.req!==''&&S.w.req!=null){ const k=S.rows.findIndex(r=>r.t==='contractor'); S.rows.splice(k<0?S.rows.length:k,0,{t:'force',desc:'이상기상',s:S.w.s,e:S.w.e,req:num(S.w.req),ok:'인정',cp:true,as:'',ae:''}); }
+function syncWxFromRow(){ const r=wxRow(); if(!r) return; S.w.s=r.s; S.w.e=r.e; S.w.req=r.req??''; ['w-s','w-e','w-req'].forEach((id,j)=>{ const el=$(id); if(el) el.value=[S.w.s,S.w.e,S.w.req][j]??''; }); }
 const isWe=d=>{ const w=new Date(d*DAY).getUTCDay(); return w===0||w===6; };
 const skipDay=d=>S.opt.noWe&&isWe(d);
 const countDays=(a,b)=>{ let n=0; for(let d=a;d<=b;d++) if(!skipDay(d)) n++; return n; };
@@ -355,41 +359,47 @@ DOCS.forEach(([k])=>$('doc-'+k).addEventListener('change',e=>{ S.r.docs[k]=e.tar
 /* ---------- STEP3 사유표 ---------- */
 function rowHTML(r,i){
   const T=TYPES[r.t]; const pl=(m,k)=>'<span class="pill '+m[k][0]+'">'+m[k][1]+'</span>';
-  const dis=r.t==='contractor';
+  const dis=r.t==='contractor'; const isW=r.t==='force';
+  let wxCell='';
+  if(isW){ const W=wxCalc(); wxCell='<td colspan="2" style="white-space:nowrap">'+(r.ok==='불인정'||!r.cp?'<span class="hint">반영 안 함</span>':(W.ok?'<b>평년 초과 '+W.excess+'일</b> <a href="#s4" style="font-size:13px;color:var(--primary-strong)">기상 검토 ›</a>':'<span class="hint">STEP 4 기상자료 필요</span>'))+'</td>'; }
   return '<tr data-i="'+i+'" class="'+(dis||r.ok==='불인정'?'row-x':'')+'">'+
   '<td>'+(i+1)+'</td>'+
   '<td><select data-k="t" id="rt-'+i+'" title="'+esc(T.d)+'">'+Object.keys(TYPES).map(k=>'<option value="'+k+'"'+(k===r.t?' selected':'')+'>'+TYPES[k].n+'</option>').join('')+'</select></td>'+
   '<td><input data-k="desc" id="rd-'+i+'" type="text" value="'+esc(r.desc)+'" style="min-width:170px"></td>'+
   '<td><input data-k="s" id="rs-'+i+'" type="date" value="'+esc(r.s)+'"></td>'+
   '<td><input data-k="e" id="re-'+i+'" type="date" value="'+esc(r.e)+'"></td>'+
-  '<td><input data-k="req" id="rq-'+i+'" type="number" min="0" value="'+(r.req??'')+'" style="width:70px"></td>'+
+  '<td><input data-k="req" id="rq-'+i+'" type="number" min="0" value="'+(r.req??'')+'" style="width:70px"'+(isW?' title="신청 기상일수 (STEP 4와 연계)"':'')+'></td>'+
   '<td>'+pl(PL_EXT,T.ext)+'</td><td>'+pl(PL,T.ld)+'</td>'+
   '<td style="text-align:center"><input data-k="cp" id="rc-'+i+'" type="checkbox"'+(r.cp?' checked':'')+(dis?' disabled':'')+'></td>'+
   '<td><select data-k="ok" id="ro-'+i+'"'+(dis?' disabled':'')+'>'+['인정','부분인정','불인정'].map(v=>'<option'+(v===(dis?'불인정':r.ok)?' selected':'')+'>'+v+'</option>').join('')+'</select></td>'+
-  '<td><input data-k="as" id="ras-'+i+'" type="date" value="'+esc(r.as)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>'+
-  '<td><input data-k="ae" id="rae-'+i+'" type="date" value="'+esc(r.ae)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>'+
+  (isW?wxCell:'<td><input data-k="as" id="ras-'+i+'" type="date" value="'+esc(r.as)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>'+
+  '<td><input data-k="ae" id="rae-'+i+'" type="date" value="'+esc(r.ae)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>')+
   '<td><button class="del" type="button" data-del="'+i+'" aria-label="사유 삭제">×</button></td></tr>';
 }
 function drawRows(){
   const tb=$('t-reasons').tBodies[0]; tb.innerHTML=S.rows.map(rowHTML).join('');
 }
+$('t-reasons').addEventListener('focusin',e=>{ if(e.target.dataset.k==='t') e.target.dataset.prev=e.target.value; });
 $('t-reasons').addEventListener('change',e=>{
   const tr=e.target.closest('tr'); if(!tr) return; const i=+tr.dataset.i; const k=e.target.dataset.k; if(!k) return; const r=S.rows[i];
   let v=e.target.type==='checkbox'?e.target.checked:e.target.value;
   if(k==='req') v=num(v);
   const oldS=r.s, oldE=r.e; r[k]=v;
+  if(k==='t'&&v==='force'&&S.rows.filter(x=>x.t==='force').length>1){ r.t=e.target.dataset.prev||'owner'; toast('기상여건 사유는 한 건만 둘 수 있습니다.'); drawRows(); return; }
+  if(k==='t'&&v==='force'){ if(!r.s&&S.w.s){ r.s=S.w.s; r.e=S.w.e; r.req=num(S.w.req); } }
   if(k==='s'||k==='e'){
-    if(r.s&&r.e&&dn(r.e)>=dn(r.s)) r.req=countDays(dn(r.s),dn(r.e));
+    if(r.t!=='force'&&r.s&&r.e&&dn(r.e)>=dn(r.s)) r.req=countDays(dn(r.s),dn(r.e));
     if(r.as===oldS||!r.as) r.as=r.s; if(r.ae===oldE||!r.ae) r.ae=r.e;
   }
   if(k==='ok'&&v!=='불인정'){ if(!r.as) r.as=r.s; if(!r.ae) r.ae=r.e; }
   if(k==='t'&&v==='contractor') r.ok='불인정';
+  if(r.t==='force') syncWxFromRow();
   save(); drawRows(); render();
 });
 $('t-reasons').addEventListener('click',e=>{ const b=e.target.closest('[data-del]'); if(!b) return; S.rows.splice(+b.dataset.del,1); save(); drawRows(); render(); });
 $('btn-add').addEventListener('click',()=>{ S.rows.push({t:'owner',desc:'',s:'',e:'',req:null,ok:'인정',cp:true,as:'',ae:''}); save(); drawRows(); render(); const last=S.rows.length-1; const el=$('rd-'+last); if(el) el.focus(); });
 
-function admissible(r){ return r.t!=='contractor'&&r.ok!=='불인정'&&r.cp&&r.as&&r.ae&&dn(r.ae)>=dn(r.as); }
+function admissible(r){ return r.t!=='contractor'&&r.t!=='force'&&r.ok!=='불인정'&&r.cp&&r.as&&r.ae&&dn(r.ae)>=dn(r.as); }
 function unionDays(){
   const set=new Set(); S.rows.forEach(r=>{ if(!admissible(r)) return; for(let d=dn(r.as);d<=dn(r.ae);d++) if(!skipDay(d)) set.add(d); }); return set;
 }
@@ -479,11 +489,12 @@ $('wx-pick').addEventListener('click',()=>$('wx-file').click());
 function readWxFile(f){ if(!f) return; f.text().then(t=>{ const j=JSON.parse(t); if(!j.stations) throw 0; initWx(j,f.name); toast('기상자료를 불러왔습니다.'); }).catch(()=>toast('wx.json 형식이 아닙니다.')); }
 $('wx-file').addEventListener('change',e=>readWxFile(e.target.files[0]));
 dropZone($('wx-drop'),readWxFile);
-const wxBind=(id,k)=>{ const el=$(id); el.value=S.w[k]??''; el.addEventListener('change',()=>{ S.w[k]=el.value; save(); render(); }); };
+const wxBind=(id,k)=>{ const el=$(id); el.value=S.w[k]??''; el.addEventListener('change',()=>{ S.w[k]=el.value; const r=wxRow(); if(r){ if(k==='s') r.s=el.value; if(k==='e') r.e=el.value; if(k==='req') r.req=num(el.value); } save(); drawRows(); render(); }); };
+syncWxFromRow();
 wxBind('w-s','s'); wxBind('w-e','e'); wxBind('w-req','req');
-$('w-stn').addEventListener('change',e=>{ S.w.stn=e.target.value; save(); render(); });
-['rain','wind','hot','cold','snow'].forEach(k=>{ const el=$('th-'+k); el.value=S.w.th[k]; el.addEventListener('change',()=>{ S.w.th[k]=parseFloat(el.value); save(); render(); }); });
-$('w-apply').checked=S.w.apply!==false; $('w-apply').addEventListener('change',e=>{ S.w.apply=e.target.checked; save(); render(); });
+$('w-stn').addEventListener('change',e=>{ S.w.stn=e.target.value; save(); drawRows(); render(); });
+['rain','wind','hot','cold','snow'].forEach(k=>{ const el=$('th-'+k); el.value=S.w.th[k]; el.addEventListener('change',()=>{ S.w.th[k]=parseFloat(el.value); save(); drawRows(); render(); }); });
+$('wx-link').addEventListener('click',e=>{ if(e.target.id!=='wx-add') return; S.rows.push({t:'force',desc:'이상기상',s:S.w.s,e:S.w.e,req:num(S.w.req),ok:'인정',cp:true,as:'',ae:''}); save(); drawRows(); render(); toast('STEP 3에 기상여건 사유를 추가했습니다.'); });
 
 /* ---------- 타임라인 ---------- */
 function drawTimeline(){
@@ -493,7 +504,7 @@ function drawTimeline(){
   if(S.w.s&&S.w.e){ pts.push(dn(S.w.s),dn(S.w.e)); }
   if(pts.length<2){ el.innerHTML='<div class="hint">사유의 영향기간을 입력하면 타임라인이 그려집니다.</div>'; return; }
   const lo=Math.min(...pts)-3, hi=Math.max(...pts)+3; const W=1000, L=150, R=16, rowH=26;
-  const lines=rows.length+(S.w.s&&S.w.e?1:0)+1; const H=28+lines*rowH+10;
+  const lines=rows.length+(!wxRow()&&S.w.s&&S.w.e?1:0)+1; const H=28+lines*rowH+10;
   const x=d=>L+(d-lo)/(hi-lo)*(W-L-R);
   let g='';
   // 월 눈금
@@ -503,10 +514,11 @@ function drawTimeline(){
   rows.forEach((r,i)=>{
     const T=TYPES[r.t]; g+='<text x="0" y="'+(y+13)+'" font-size="13" fill="var(--sub)">'+(S.rows.indexOf(r)+1)+'. '+esc(T.n).slice(0,11)+'</text>';
     g+='<rect x="'+x(dn(r.s))+'" y="'+(y+3)+'" width="'+Math.max(2,x(dn(r.e)+1)-x(dn(r.s)))+'" height="16" rx="3" fill="none" stroke="var(--muted)" stroke-dasharray="3 2"/>';
+    if(r.t==='force'&&r.ok!=='불인정'&&r.cp){ const W=wxCalc(); g+='<text x="'+(x(dn(r.e)+1)+6)+'" y="'+(y+15)+'" font-size="12" fill="var(--rain)">평년 초과 '+(W.ok?W.excess:0)+'일</text>'; }
     if(admissible(r)) g+='<rect x="'+x(dn(r.as))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(r.ae)+1)-x(dn(r.as)))+'" height="12" rx="2" fill="var(--primary)" opacity=".85"/>';
     y+=rowH;
   });
-  if(S.w.s&&S.w.e){ g+='<text x="0" y="'+(y+13)+'" font-size="13" fill="var(--sub)">기상 검토기간</text><rect x="'+x(dn(S.w.s))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(S.w.e)+1)-x(dn(S.w.s)))+'" height="12" rx="2" fill="var(--rain)" opacity=".35"/>'; y+=rowH; }
+  if(!wxRow()&&S.w.s&&S.w.e){ g+='<text x="0" y="'+(y+13)+'" font-size="13" fill="var(--sub)">기상 검토기간</text><rect x="'+x(dn(S.w.s))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(S.w.e)+1)-x(dn(S.w.s)))+'" height="12" rx="2" fill="var(--rain)" opacity=".35"/>'; y+=rowH; }
   // 인정 합집합
   const U=[...unionDays()].sort((a,b)=>a-b); g+='<text x="0" y="'+(y+13)+'" font-size="12" font-weight="700" fill="var(--text)">인정(중첩 제외)</text>';
   let st=null,pv=null; const segs=[]; U.forEach(d=>{ if(st==null){st=d;pv=d;} else if(d===pv+1) pv=d; else { segs.push([st,pv]); st=d; pv=d; } }); if(st!=null) segs.push([st,pv]);
@@ -519,12 +531,13 @@ function drawTimeline(){
 function compute(){
   const W=wxCalc();
   const reqRows=S.rows.reduce((a,r)=>a+(num(r.req)||0),0);
-  const reqW=num(S.w.req)||0;
-  const reqTotal=num(S.r.days)!=null?num(S.r.days):reqRows+reqW;
+  const wr=wxRow(); const reqW=wr?(num(wr.req)||0):0;
+  const reqTotal=num(S.r.days)!=null?num(S.r.days):reqRows;
   const U=unionDays(); const unionN=U.size;
   const sumAdm=S.rows.filter(admissible).reduce((a,r)=>a+countDays(dn(r.as),dn(r.ae)),0);
   let weEx=0; S.rows.filter(admissible).forEach(r=>{ for(let d=dn(r.as);d<=dn(r.ae);d++) if(skipDay(d)) weEx++; });
-  const wxDays=(W.ok&&S.w.apply!==false)?Math.min(W.excess, reqW||W.excess):0;
+  const wxOn=!!(wr&&wr.ok!=='불인정'&&wr.cp);
+  const wxDays=(W.ok&&wxOn)?Math.min(W.excess, reqW||W.excess):0;
   const okDays=unionN+wxDays;
   const end=dn(S.b.end); const newEnd=end!=null?end+okDays:null;
   const reqDate=dn(S.r.date);
@@ -536,7 +549,7 @@ function compute(){
   let verdict='v-none', vt='검토 전';
   if(reqTotal>0||S.rows.length){ if(okDays<=0){verdict='v-no';vt='불인정';} else if(okDays<reqTotal){verdict='v-part';vt='부분 인정';} else {verdict='v-ok';vt='인정';} }
   if(timely===false){ verdict='v-no'; vt='청구시기 경과 · 재검토'; }
-  return {weEx,W,reqRows,reqTotal,unionN,sumAdm,wxDays,okDays,end,newEnd,timely,adjRows,adjCheck,late,ld,ldCap,verdict,vt};
+  return {wxOn,weEx,W,reqRows,reqTotal,unionN,sumAdm,wxDays,okDays,end,newEnd,timely,adjRows,adjCheck,late,ld,ldCap,verdict,vt};
 }
 
 /* ---------- 후속조치 ---------- */
@@ -560,9 +573,9 @@ let LAST=null;
 function render(){
   const R=compute(); LAST=R;
   $('k-req').textContent=R.reqTotal+'일';
-  $('k-req-s').textContent='사유 '+S.rows.length+'건'+(num(S.w.req)?' + 기상 '+num(S.w.req)+'일':'');
+  $('k-req-s').textContent='사유 '+S.rows.length+'건'+(wxRow()&&num(wxRow().req)?' (기상 '+num(wxRow().req)+'일 포함)':'');
   $('k-ok').textContent=R.okDays+'일';
-  $('k-ok-s').textContent='기간 사유 '+R.unionN+'일 + 이상기상 '+R.wxDays+'일';
+  $('k-ok-s').textContent='기간 사유 '+R.unionN+'일 + 기상여건 '+R.wxDays+'일';
   $('k-end').textContent=R.newEnd!=null?dk(R.newEnd):'–';
   $('k-end-s').textContent='현재 준공일 '+dk(R.end);
   const v=$('sum-verdict'); v.className='verdict '+R.verdict; v.textContent=R.vt;
@@ -584,6 +597,10 @@ function render(){
   $('opt-we-h').textContent=S.opt.noWe?'인정·신청일수와 기상 검토에서 토·일을 셈하지 않습니다. 변경 준공일은 인정일수만큼 달력일로 늘립니다.':'';
   drawTimeline();
   drawWx(R.W);
+  const wl=$('wx-link'); const wr2=wxRow();
+  if(!wr2){ wl.className='note warn'; wl.innerHTML='STEP 3에 기상여건(불가항력) 사유가 없어 이 결과는 참고용입니다. <button class="btn secondary sm" type="button" id="wx-add" style="margin-left:8px">기상여건 사유로 추가</button>'; }
+  else if(!R.wxOn){ wl.className='note'; wl.textContent='STEP 3 기상여건 사유가 불인정이거나 CP 영향 없음으로 되어 있어 인정일수에 반영하지 않습니다.'; }
+  else { wl.className='note ok'; wl.textContent='STEP 3 '+(S.rows.indexOf(wr2)+1)+'번 기상여건(불가항력) 사유와 연계됨 — 검토기간·신청일수가 서로 맞춰지고, 인정일수 '+R.wxDays+'일(평년 초과'+(num(wr2.req)!=null&&num(wr2.req)<(R.W.excess||0)?', 신청일수 한도':'')+')이 반영됩니다.'; }
   followups(R);
 }
 
@@ -630,7 +647,7 @@ function refreshInputs(){
   set('b-name',S.b.name); set('b-vendor',S.b.vendor); set('b-amt',S.b.amt,true); set('b-start',S.b.start); set('b-end',S.b.end); set('b-round',S.b.round); set('b-prev',S.b.prev);
   set('r-date',S.r.date); set('r-days',S.r.days); set('r-doc',S.r.doc);
   set('w-s',S.w.s); set('w-e',S.w.e); set('w-req',S.w.req); if(WX&&WX.stations[S.w.stn]) $('w-stn').value=S.w.stn;
-  ['rain','wind','hot','cold','snow'].forEach(k=>set('th-'+k,S.w.th[k])); $('w-apply').checked=S.w.apply!==false;
+  ['rain','wind','hot','cold','snow'].forEach(k=>set('th-'+k,S.w.th[k]));
   DOCS.forEach(([k])=>$('doc-'+k).checked=!!S.r.docs[k]);
 }
 
@@ -640,7 +657,7 @@ $('btn-reset').addEventListener('click',e=>{
   const b=e.currentTarget;
   if(!resetArm){ b.textContent='한 번 더 누르면 비웁니다'; b.style.color='var(--bad)'; resetArm=setTimeout(()=>{ resetArm=null; b.textContent='새로 작성'; b.style.color=''; },3000); return; }
   clearTimeout(resetArm); resetArm=null; b.textContent='새로 작성'; b.style.color='';
-  S={b:{name:'',vendor:'',amt:null,start:'',end:'',round:'0',prev:0},r:{date:'',days:'',doc:'',docs:{}},rows:[],w:{stn:S.w.stn,s:'',e:'',req:'',apply:true,th:{rain:5,wind:15,hot:33,cold:0,snow:5}},c:{claim:null,ok:null,actual:'',rate:0.5},f:{},opt:{noWe:false}};
+  S={b:{name:'',vendor:'',amt:null,start:'',end:'',round:'0',prev:0},r:{date:'',days:'',doc:'',docs:{}},rows:[],w:{stn:S.w.stn,s:'',e:'',req:'',th:{rain:5,wind:15,hot:33,cold:0,snow:5}},c:{claim:null,ok:null,actual:'',rate:0.5},f:{},opt:{noWe:false}};
   $('opt-we').checked=false;
   save(); refreshInputs(); drawRows(); render(); toast('입력값을 비웠습니다.');
 });
@@ -667,7 +684,7 @@ async function exportXlsx(){
   sec('3. 사유별 판정');
   const hd=['#','사유 유형','내용','영향기간','','신청일수','CP영향','판정','인정 시작','인정 종료'];
   hd.forEach((h,i)=>{ const c=ws.getCell(r,i+1); c.value=h; c.font=font({bold:true}); c.fill={type:'pattern',pattern:'solid',fgColor:{argb:GRAY}}; c.border=border; c.alignment={horizontal:'center',vertical:'middle'}; }); ws.mergeCells(r,4,r,5); r++;
-  S.rows.forEach((x,i)=>{ const vals=[i+1,TYPES[x.t].n,x.desc,ds(dn(x.s)),ds(dn(x.e)),num(x.req),x.cp?'있음':'없음',x.t==='contractor'?'불인정':x.ok,admissible(x)?x.as:'',admissible(x)?x.ae:''];
+  S.rows.forEach((x,i)=>{ const vals=[i+1,TYPES[x.t].n,x.desc,ds(dn(x.s)),ds(dn(x.e)),num(x.req),x.cp?'있음':'없음',x.t==='contractor'?'불인정':x.ok,x.t==='force'?(R.wxOn?'평년 초과 '+R.W.excess+'일':''):(admissible(x)?x.as:''),x.t==='force'?(R.wxOn?'인정 '+R.wxDays+'일':''):(admissible(x)?x.ae:'')];
     vals.forEach((v,j)=>{ const c=ws.getCell(r,j+1); c.value=v; c.font=font(); c.border=border; c.alignment={vertical:'middle',wrapText:j===2,horizontal:(j===5||j===0)?'center':'left'}; }); r++; });
   ws.mergeCells(r,1,r,5); ws.getCell(r,1).value='인정기간 합계 '+R.sumAdm+'일 − 중첩 '+(R.sumAdm-R.unionN)+'일 = 인정 '+R.unionN+'일'; ws.getCell(r,1).font=font({bold:true}); ws.getCell(r,1).fill={type:'pattern',pattern:'solid',fgColor:{argb:G2}}; for(let j=6;j<=10;j++) ws.getCell(r,j).fill={type:'pattern',pattern:'solid',fgColor:{argb:G2}}; r+=2;
   sec('4. 기상 검토 (기상청 ASOS 일자료)');
@@ -700,7 +717,7 @@ function reportBlocks(){
   B.push('<div class="rp-sec"><h3>1. 검토 결과</h3>'+kv([['판정',esc(R.vt)],['인정 연장일수',R.okDays+'일 (기간 사유 '+R.unionN+'일 + 이상기상 '+R.wxDays+'일)'+(S.opt.noWe?' · 주말(토·일) 제외':'')],['현재 준공예정일',dk(R.end)],['변경 준공일',dk(R.newEnd)],['청구 시기',R.timely==null?'–':(R.timely?'적정 (계약기간 내 청구)':'부적정 (계약기간 경과 후 청구)')]])+'</div>');
   B.push('<div class="rp-sec"><h3>2. 계약 기본정보</h3>'+kv([['공사명',esc(S.b.name)],['계약상대자',esc(S.b.vendor)],['계약금액',S.b.amt?won(num(S.b.amt)):'–'],['착공일',dk(dn(S.b.start))],['기존 연장',['최초 연장','1차 이력','2차 이력','3차 이상'][+S.b.round]+' / 누계 '+(S.b.prev||0)+'일'],['연장 신청일',dk(dn(S.r.date))+(S.r.doc?' ('+esc(S.r.doc)+')':'')],['제출 증빙',DOCS.map(([k,l])=>(S.r.docs[k]?'■ ':'□ ')+l).join('<br>')]])+'</div>');
   B.push('<div class="rp-sec"><h3>3. 사유별 판정</h3><table class="rp-tb"><tr><th>#</th><th>사유 유형</th><th>내용</th><th>영향기간</th><th>신청</th><th>불산입</th><th>CP</th><th>판정</th><th>인정기간</th></tr>'+
-    S.rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+TYPES[x.t].n+'</td><td class="l">'+esc(x.desc)+'</td><td>'+ds(dn(x.s))+'<br>~ '+ds(dn(x.e))+'</td><td>'+(num(x.req)??'')+'</td><td>'+PL[TYPES[x.t].ld][1]+'</td><td>'+(x.cp?'있음':'없음')+'</td><td>'+(x.t==='contractor'?'불인정':x.ok)+'</td><td>'+(admissible(x)?x.as+'<br>~ '+x.ae:'–')+'</td></tr>').join('')+
+    S.rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+TYPES[x.t].n+'</td><td class="l">'+esc(x.desc)+'</td><td>'+ds(dn(x.s))+'<br>~ '+ds(dn(x.e))+'</td><td>'+(num(x.req)??'')+'</td><td>'+PL[TYPES[x.t].ld][1]+'</td><td>'+(x.cp?'있음':'없음')+'</td><td>'+(x.t==='contractor'?'불인정':x.ok)+'</td><td>'+(x.t==='force'?(R.wxOn?'평년 초과 '+R.W.excess+'일<br>인정 '+R.wxDays+'일':'–'):(admissible(x)?x.as+'<br>~ '+x.ae:'–'))+'</td></tr>').join('')+
     '</table><div class="rp-note">인정기간 합계 '+R.sumAdm+'일'+(S.opt.noWe?'(주말 '+R.weEx+'일 제외)':'')+' − 중첩 '+(R.sumAdm-R.unionN)+'일 = 인정 '+R.unionN+'일</div></div>');
   if(W.ok){
     const byM={}; W.days.forEach(o=>{ const dt=new Date(o.d*DAY); const k=dt.getUTCFullYear()+'.'+String(dt.getUTCMonth()+1).padStart(2,'0'); (byM[k]=byM[k]||Array(31).fill(null))[dt.getUTCDate()-1]=o; });
