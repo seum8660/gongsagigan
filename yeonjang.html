@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>공사기간 연장 검토</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{
+  --primary:#256EF4; --primary-strong:#0B50D0; --primary-soft:#ECF2FE;
+  --text:#1E2124; --sub:#464C53; --muted:#6D7882; --line:#CDD1D5; --line-soft:#E6E8EA;
+  --bg:#F4F5F6; --surface:#FFFFFF; --surface-2:#F8F9FA;
+  --ok:#228738; --ok-soft:#EAF6EC; --warn:#8A5C00; --warn-soft:#FFF3DB; --bad:#DE3412; --bad-soft:#FDEFEC;
+  --rain:#2F7FE0; --wind:#7A5AF0; --hot:#E0612F; --cold:#1BA3B8; --snow:#8FA3B8;
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --primary:#5B93F7; --primary-strong:#8AB2FA; --primary-soft:#1B2A45;
+    --text:#E8EAED; --sub:#C3C8CE; --muted:#98A1AB; --line:#3A4048; --line-soft:#2C3137;
+    --bg:#131619; --surface:#1B1F23; --surface-2:#22272C;
+    --ok:#5CC274; --ok-soft:#18301E; --warn:#F2C25C; --warn-soft:#352A12; --bad:#FF7B5E; --bad-soft:#3A1E18;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --primary:#5B93F7; --primary-strong:#8AB2FA; --primary-soft:#1B2A45;
+  --text:#E8EAED; --sub:#C3C8CE; --muted:#98A1AB; --line:#3A4048; --line-soft:#2C3137;
+  --bg:#131619; --surface:#1B1F23; --surface-2:#22272C;
+  --ok:#5CC274; --ok-soft:#18301E; --warn:#F2C25C; --warn-soft:#352A12; --bad:#FF7B5E; --bad-soft:#3A1E18;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--text);font-family:"Pretendard GOV","Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6;margin:0}
+.gov{background:var(--surface);border-bottom:1px solid var(--line-soft)}
+.gov-in{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:6px;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gov-in b{color:var(--sub);font-weight:500}
+header.top{background:var(--surface);border-bottom:2px solid var(--primary)}
+.top-in{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:18px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:24px;margin:0;letter-spacing:-.02em;text-wrap:balance}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:2px}
+.test{display:inline-block;font-size:12px;font-weight:700;color:var(--bad);border:1px solid var(--bad);border-radius:4px;padding:1px 8px;margin-left:8px;vertical-align:middle}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+main{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
+.btn{font:inherit;font-size:14px;font-weight:500;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:38px}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.primary:hover{background:var(--primary-strong);color:#fff}
+.btn.sm{font-size:13px;padding:4px 10px;min-height:30px}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+/* summary */
+.summary{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:18px 20px;display:grid;gap:14px}
+.sum-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sum-head h2{margin:0;font-size:17px}
+.verdict{font-weight:700;font-size:14px;border-radius:999px;padding:4px 14px}
+.v-ok{background:var(--ok-soft);color:var(--ok)} .v-part{background:var(--warn-soft);color:var(--warn)} .v-no{background:var(--bad-soft);color:var(--bad)} .v-none{background:var(--surface-2);color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi{background:var(--surface-2);border-radius:6px;padding:10px 14px}
+.kpi .l{font-size:12.5px;color:var(--muted)}
+.kpi .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi .s{font-size:12.5px;color:var(--sub)}
+.flags{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:12.5px;border-radius:4px;padding:2px 8px;border:1px solid var(--line);color:var(--sub);background:var(--surface)}
+.chip.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.chip.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.chip.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
+/* steps */
+section.step{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden}
+.step-h{display:flex;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.step-n{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:.06em}
+.step-h h2{margin:0;font-size:17px}
+.step-h p{margin:0;font-size:13px;color:var(--muted);flex-basis:100%}
+.step-b{padding:18px 20px;display:grid;gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 16px}
+label.f{display:grid;gap:4px;font-size:13px;color:var(--sub);font-weight:500}
+input,select,textarea{font:inherit;font-size:14px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-height:38px;width:100%}
+input[type=number]{font-variant-numeric:tabular-nums;text-align:right}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+input[type=checkbox]{width:18px;height:18px;min-height:0;accent-color:var(--primary)}
+.hint{font-size:12.5px;color:var(--muted)}
+.note{font-size:13px;border-radius:6px;padding:10px 12px;background:var(--surface-2);color:var(--sub)}
+.note.ok{background:var(--ok-soft);color:var(--ok)} .note.warn{background:var(--warn-soft);color:var(--warn)} .note.bad{background:var(--bad-soft);color:var(--bad)}
+.drop{border:1.5px dashed var(--line);border-radius:6px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--sub)}
+.drop.over{border-color:var(--primary);background:var(--primary-soft)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line-soft);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line-soft);padding:7px 8px;text-align:left;vertical-align:middle}
+th{background:var(--surface-2);font-weight:500;color:var(--sub);white-space:nowrap;font-size:12.5px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td input,td select{min-height:32px;padding:4px 7px;font-size:13px}
+td input[type=date]{min-width:128px}
+.tbl-rules{min-width:1050px}
+.pill{font-size:12px;border-radius:4px;padding:1px 6px;white-space:nowrap}
+.p-o{background:var(--ok-soft);color:var(--ok)} .p-x{background:var(--bad-soft);color:var(--bad)} .p-c{background:var(--warn-soft);color:var(--warn)}
+.row-x td{opacity:.62}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px}
+.del:hover{color:var(--bad)}
+/* timeline */
+.tl{position:relative;border:1px solid var(--line-soft);border-radius:6px;padding:12px 12px 8px;background:var(--surface-2);overflow-x:auto}
+.tl svg{display:block;min-width:640px;width:100%}
+/* weather */
+.wx-bars{display:grid;gap:10px}
+.wx-cal{display:grid;gap:8px}
+.wx-m{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center}
+.wx-m .ml{font-size:12.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.wx-days{display:grid;grid-template-columns:repeat(31,minmax(14px,1fr));gap:2px;min-width:480px}
+.wx-d{height:22px;border-radius:3px;background:var(--line-soft);position:relative;font-size:9.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.wx-d.out{background:transparent}
+.wx-d.f{color:#fff;font-weight:700}
+.wx-d.ex{outline:2px solid var(--text);outline-offset:-2px;opacity:.45}
+.wx-scroll{overflow-x:auto}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--sub)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.checks{display:grid;gap:8px}
+.checks label{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.checks .why{font-size:12.5px;color:var(--muted);display:block}
+.law{font-size:12.5px;color:var(--muted);line-height:1.7}
+.law b{color:var(--sub);font-weight:500}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);padding:10px 16px;border-radius:6px;font-size:14px;z-index:10}
+footer{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 32px;font-size:12px;color:var(--muted)}
+@media (max-width:560px){ h1{font-size:20px} .step-b,.step-h,.summary{padding-inline:14px} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="gov"><div class="gov-in"><b>전라남도교육청</b><span>·</span><span>계약관리·정산 도구 모음</span></div></div>
+<header class="top"><div class="top-in">
+  <div>
+    <div class="crumb">계약관리 › 계약기간 변경</div>
+    <h1>공사기간 연장 검토<span class="test">테스트용</span></h1>
+  </div>
+  <div class="top-actions">
+    <button class="btn" id="btn-reset" type="button">새로 작성</button>
+    <button class="btn primary" id="btn-xlsx" type="button">검토서 엑셀 내보내기</button>
+  </div>
+</div></header>
+
+<main>
+  <!-- 요약 -->
+  <div class="summary" aria-live="polite">
+    <div class="sum-head"><h2>검토 결과 요약</h2><span class="verdict v-none" id="sum-verdict">검토 전</span></div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">신청 연장일수</div><div class="v" id="k-req">0일</div><div class="s" id="k-req-s">사유 0건</div></div>
+      <div class="kpi"><div class="l">인정 연장일수</div><div class="v" id="k-ok">0일</div><div class="s" id="k-ok-s">중첩 제외 후</div></div>
+      <div class="kpi"><div class="l">변경 준공일</div><div class="v" id="k-end">–</div><div class="s" id="k-end-s">현재 준공일 –</div></div>
+      <div class="kpi"><div class="l">지연배상금</div><div class="v" id="k-ld">–</div><div class="s" id="k-ld-s">실제 준공일 입력 시 산정</div></div>
+    </div>
+    <div class="flags" id="sum-flags"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <section class="step" id="s1">
+    <div class="step-h"><span class="step-n">STEP 1</span><h2>계약 기본정보</h2><p>에듀파인 계약정보 PDF를 올리면 공사명·계약금액·계약기간을 자동으로 채웁니다. 인식되지 않은 칸은 직접 입력합니다.</p></div>
+    <div class="step-b">
+      <div class="drop" id="pdf-drop">
+        <input type="file" id="pdf-file" accept="application/pdf" hidden>
+        <button class="btn sm" type="button" id="pdf-pick">계약정보 PDF 선택</button>
+        <span id="pdf-msg">또는 PDF 파일을 여기에 끌어다 놓으십시오.</span>
+      </div>
+      <div class="grid">
+        <label class="f" style="grid-column:1/-1">공사명<input id="b-name" type="text"></label>
+        <label class="f">계약상대자<input id="b-vendor" type="text"></label>
+        <label class="f">계약금액(원)<input id="b-amt" type="text" inputmode="numeric"></label>
+        <label class="f">착공일<input id="b-start" type="date"></label>
+        <label class="f">현재 준공예정일<input id="b-end" type="date"><span class="hint" id="b-end-h">기존 연장분 반영 후 날짜</span></label>
+        <label class="f">기존 연장 차수<select id="b-round"><option value="0">최초 연장</option><option value="1">1차 연장 이력 있음</option><option value="2">2차 연장 이력 있음</option><option value="3">3차 이상</option></select></label>
+        <label class="f">기존 연장 누계(일)<input id="b-prev" type="number" min="0" value="0"></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" id="s2">
+    <div class="step-h"><span class="step-n">STEP 2</span><h2>연장 신청 접수</h2><p>계약상대자는 계약기간이 끝나기 전에 연장을 청구해야 합니다. 신청일과 준공예정일을 비교해 청구 시기를 판정합니다.</p></div>
+    <div class="step-b">
+      <div class="grid">
+        <label class="f">연장 신청일<input id="r-date" type="date"></label>
+        <label class="f">신청 연장일수(공문 기재)<input id="r-days" type="number" min="0"><span class="hint">비우면 사유별 신청일수 합계를 씁니다</span></label>
+        <label class="f">접수 문서번호<input id="r-doc" type="text" placeholder="예) ○○건설-2026-118"></label>
+      </div>
+      <div class="note" id="r-judge">신청일을 입력하십시오.</div>
+      <div>
+        <div class="hint" style="margin-bottom:6px">제출 증빙</div>
+        <div class="checks" id="r-docs"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" id="s3">
+    <div class="step-h"><span class="step-n">STEP 3</span><h2>사유 판정 · 연장일수 검토</h2><p>사유 유형을 고르면 연장 가능 여부, 지체일수 불산입, 계약금액 조정 대상이 표시됩니다. 인정기간이 겹치면 한 번만 셉니다. 주공정(CP)에 영향이 없는 사유는 인정일수에서 빠집니다.</p></div>
+    <div class="step-b">
+      <div class="tbl-wrap"><table class="tbl-rules" id="t-reasons">
+        <thead><tr>
+          <th style="width:34px">#</th><th>사유 유형</th><th>내용</th><th>영향 시작</th><th>영향 종료</th><th class="num">신청일수</th>
+          <th>연장</th><th>불산입</th><th>금액조정</th><th>CP영향</th><th>판정</th><th>인정 시작</th><th>인정 종료</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="btn-add">사유 추가</button></div>
+      <div class="tl" id="timeline"></div>
+      <div class="note" id="union-note"></div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step" id="s4">
+    <div class="step-h"><span class="step-n">STEP 4</span><h2>기상 검토 (기상청 ASOS 일자료)</h2><p>청구기간에 실제로 작업제한 기준을 넘은 날과, 당초 공기에 이미 들어간 평년 비작업일수를 비교합니다. 평년을 넘는 날만 이상기상으로 인정할 수 있습니다.</p></div>
+    <div class="step-b">
+      <div class="note" id="wx-src">기상자료를 불러오는 중입니다…</div>
+      <div class="drop" id="wx-drop" hidden>
+        <input type="file" id="wx-file" accept=".json,application/json" hidden>
+        <button class="btn sm" type="button" id="wx-pick">wx.json 선택</button>
+        <span>gongsagigan 저장소의 최신 wx.json을 직접 올릴 수도 있습니다.</span>
+      </div>
+      <div class="grid">
+        <label class="f">관측지점<select id="w-stn"></select></label>
+        <label class="f">검토 시작일<input id="w-s" type="date"></label>
+        <label class="f">검토 종료일<input id="w-e" type="date"></label>
+        <label class="f">계약상대자 신청 기상일수<input id="w-req" type="number" min="0"></label>
+      </div>
+      <div class="grid">
+        <label class="f">강우 (mm 이상)<input id="th-rain" type="number" step="0.1" value="5"><span class="hint">구조물공사는 10mm</span></label>
+        <label class="f">최대순간풍속 (m/s 이상)<input id="th-wind" type="number" step="0.1" value="15"></label>
+        <label class="f">혹서 최고기온 (℃ 이상)<input id="th-hot" type="number" step="0.1" value="33"></label>
+        <label class="f">동절기 최고기온 (℃ 이하)<input id="th-cold" type="number" step="0.1" value="0"></label>
+        <label class="f">신적설 (cm 이상)<input id="th-snow" type="number" step="0.1" value="5"></label>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--rain)"></i>강우</span><span><i style="background:var(--wind)"></i>강풍</span><span><i style="background:var(--hot)"></i>혹서</span><span><i style="background:var(--cold)"></i>동절기</span><span><i style="background:var(--snow)"></i>강설</span><span><i style="background:var(--line-soft)"></i>작업 가능</span><span><i style="background:var(--line-soft);outline:2px solid var(--text);outline-offset:-2px;opacity:.45"></i>다른 사유 인정기간과 중첩</span>
+      </div>
+      <div class="wx-scroll"><div class="wx-cal" id="wx-cal"></div></div>
+      <div class="cmp" id="wx-cmp"></div>
+      <label style="display:flex;gap:10px;align-items:center;font-size:14px"><input type="checkbox" id="w-apply" checked> 평년 초과 일수를 이상기상(불가항력) 인정일수에 반영</label>
+      <div class="note" id="wx-note"></div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="step" id="s5">
+    <div class="step-h"><span class="step-n">STEP 5</span><h2>계약금액 조정 · 지연배상금</h2><p>연장기간 간접비는 별도 「공기연장 간접비 산정기」에서 산정한 감독자 인정액을 옮겨 적습니다. 지연배상금은 실제 준공일이 변경 준공일을 넘긴 경우에만 생깁니다.</p></div>
+    <div class="step-b">
+      <div class="grid">
+        <label class="f">간접비 시공사 청구액(원)<input id="c-claim" type="text" inputmode="numeric"></label>
+        <label class="f">간접비 감독자 인정액(원)<input id="c-ok" type="text" inputmode="numeric"><span class="hint">공기연장 간접비 산정기 결과</span></label>
+        <label class="f">실제 준공일(예정)<input id="d-actual" type="date"></label>
+        <label class="f">지연배상금률(‰, 1일)<input id="d-rate" type="number" step="0.01" value="0.5"><span class="hint">공사 기본값 1천분의 0.5</span></label>
+      </div>
+      <div class="note" id="c-note"></div>
+    </div>
+  </section>
+
+  <!-- STEP 6 -->
+  <section class="step" id="s6">
+    <div class="step-h"><span class="step-n">STEP 6</span><h2>후속조치 체크리스트</h2><p>변경계약 전후로 챙길 일입니다. 상황에 맞지 않는 항목은 자동으로 흐리게 표시됩니다.</p></div>
+    <div class="step-b"><div class="checks" id="f-checks"></div></div>
+  </section>
+
+  <section class="step">
+    <div class="step-h"><span class="step-n">근거</span><h2>관련 규정</h2></div>
+    <div class="step-b law">
+      <div><b>「지방자치단체를 당사자로 하는 계약에 관한 법률 시행령」 제75조제1항</b> — 공사기간 변경 등 계약내용 변경으로 계약금액을 조정할 필요가 있으면 변경된 내용에 따라 실비를 초과하지 않는 범위에서 조정합니다.</div>
+      <div><b>같은 영 제90조제1항·제3항</b> — 계약상대자의 책임 없는 사유로 지체된 일수는 지체일수에 넣지 않으며, 지연배상금은 계약금액의 100분의 30이 한도입니다.</div>
+      <div><b>「지방자치단체 입찰 및 계약 집행기준」 공사계약 일반조건</b> — 계약기간 연장 청구 시기·절차와 불가항력 등 사유별 금액조정 여부는 현행 예규 원문으로 최종 확인하십시오. 이 도구의 판정은 검토 보조용입니다.</div>
+    </div>
+  </section>
+</main>
+<footer>기상자료: 기상청 ASOS 일자료(기상자료개방포털) · seum8660/gongsagigan 저장소 wx.json(매월 자동 갱신). 입력값은 이 브라우저에만 남습니다.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const DAY=86400000;
+const dn=s=>{ if(!s) return null; const [y,m,d]=s.split('-').map(Number); return Date.UTC(y,m-1,d)/DAY; };
+const ds=n=>{ if(n==null||isNaN(n)) return ''; const d=new Date(n*DAY); return d.toISOString().slice(0,10); };
+const dk=n=>{ if(n==null) return '–'; const d=new Date(n*DAY); return d.getUTCFullYear()+'. '+(d.getUTCMonth()+1)+'. '+d.getUTCDate()+'.'; };
+const won=v=>(v==null||isNaN(v))?'–':Math.round(v).toLocaleString('ko-KR')+'원';
+const num=s=>{ const v=parseFloat(String(s||'').replace(/[^0-9.\-]/g,'')); return isNaN(v)?null:v; };
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){ const el=document.createElement('div'); el.className='toast'; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(),2600); }
+
+/* ---------- 사유 유형 ---------- */
+const TYPES={
+  owner:{n:'발주기관 책임',d:'설계변경·공사중지 지시·용지 미확보 등',ext:'o',ld:'o',adj:'o'},
+  supply:{n:'관급자재 공급 지연',d:'관급자재·지급자재 납품 지연',ext:'o',ld:'o',adj:'o'},
+  force:{n:'불가항력',d:'태풍·홍수·지진 등 천재지변',ext:'o',ld:'o',adj:'c'},
+  nofault:{n:'계약상대자 책임 없는 중단',d:'민원·인허가 지연 등',ext:'o',ld:'o',adj:'c'},
+  contractor:{n:'계약상대자 책임',d:'인력·장비·자재 수급, 부실시공 재시공',ext:'x',ld:'x',adj:'x'}
+};
+const PL={o:['p-o','대상'],x:['p-x','불가'],c:['p-c','확인']};
+const PL_EXT={o:['p-o','가능'],x:['p-x','불가'],c:['p-c','확인']};
+const DOCS=[['d1','연장 청구 공문'],['d2','사유 입증자료 (지시서·공문·사진 등)'],['d3','변경 예정공정표'],['d4','감독자·건설사업관리단 검토의견'],['d5','간접비 산출 내역 (금액조정 청구 시)']];
+
+/* ---------- 상태 ---------- */
+const SAMPLE={
+  b:{name:'○○초등학교 체육관 증축공사 (예시)',vendor:'(주)예시건설',amt:1850000000,start:'2026-03-02',end:'2026-10-31',round:'0',prev:0},
+  r:{date:'2026-09-18',days:'',doc:'예시건설-2026-118',docs:{d1:true,d2:true,d3:true,d4:false,d5:false}},
+  rows:[
+    {t:'owner',desc:'지붕 구조 설계변경(철골 보강)',s:'2026-06-10',e:'2026-06-30',req:21,ok:'인정',cp:true,as:'2026-06-10',ae:'2026-06-30'},
+    {t:'supply',desc:'관급 창호 납품 지연',s:'2026-06-25',e:'2026-07-10',req:16,ok:'인정',cp:true,as:'2026-06-25',ae:'2026-07-10'},
+    {t:'contractor',desc:'철근공 인력 수급 차질',s:'2026-08-03',e:'2026-08-09',req:7,ok:'불인정',cp:true,as:'',ae:''}
+  ],
+  w:{stn:'목포',s:'2026-07-11',e:'2026-09-17',req:12,apply:true,th:{rain:5,wind:15,hot:33,cold:0,snow:5}},
+  c:{claim:48600000,ok:'',actual:'',rate:0.5},
+  f:{}
+};
+let S;
+function load(){ try{ const j=localStorage.getItem('extReview.v1'); if(j) return JSON.parse(j); }catch(e){} return JSON.parse(JSON.stringify(SAMPLE)); }
+function save(){ try{ localStorage.setItem('extReview.v1',JSON.stringify(S)); }catch(e){} }
+S=load();
+
+/* ---------- STEP1/2/5 바인딩 ---------- */
+const fmtAmtInput=el=>{ const v=num(el.value); el.value=v==null?'':Math.round(v).toLocaleString('ko-KR'); };
+function bindField(id,get,set,isAmt){
+  const el=$(id); const v=get(); el.value=(isAmt&&v!=null&&v!=='')?Math.round(v).toLocaleString('ko-KR'):(v==null?'':v);
+  el.addEventListener(isAmt?'change':'input',()=>{ if(isAmt) fmtAmtInput(el); set(isAmt?num(el.value):el.value); save(); render(); });
+}
+bindField('b-name',()=>S.b.name,v=>S.b.name=v);
+bindField('b-vendor',()=>S.b.vendor,v=>S.b.vendor=v);
+bindField('b-amt',()=>S.b.amt,v=>S.b.amt=v,true);
+bindField('b-start',()=>S.b.start,v=>S.b.start=v);
+bindField('b-end',()=>S.b.end,v=>S.b.end=v);
+bindField('b-round',()=>S.b.round,v=>S.b.round=v);
+bindField('b-prev',()=>S.b.prev,v=>S.b.prev=num(v)||0);
+bindField('r-date',()=>S.r.date,v=>S.r.date=v);
+bindField('r-days',()=>S.r.days,v=>S.r.days=v);
+bindField('r-doc',()=>S.r.doc,v=>S.r.doc=v);
+bindField('c-claim',()=>S.c.claim,v=>S.c.claim=v,true);
+bindField('c-ok',()=>S.c.ok,v=>S.c.ok=v,true);
+bindField('d-actual',()=>S.c.actual,v=>S.c.actual=v);
+bindField('d-rate',()=>S.c.rate,v=>S.c.rate=num(v));
+
+$('r-docs').innerHTML=DOCS.map(([k,l])=>'<label><input type="checkbox" id="doc-'+k+'"'+(S.r.docs[k]?' checked':'')+'><span>'+l+'</span></label>').join('');
+DOCS.forEach(([k])=>$('doc-'+k).addEventListener('change',e=>{ S.r.docs[k]=e.target.checked; save(); render(); }));
+
+/* ---------- STEP3 사유표 ---------- */
+function rowHTML(r,i){
+  const T=TYPES[r.t]; const pl=(m,k)=>'<span class="pill '+m[k][0]+'">'+m[k][1]+'</span>';
+  const dis=r.t==='contractor';
+  return '<tr data-i="'+i+'" class="'+(dis||r.ok==='불인정'?'row-x':'')+'">'+
+  '<td>'+(i+1)+'</td>'+
+  '<td><select data-k="t" id="rt-'+i+'" title="'+esc(T.d)+'">'+Object.keys(TYPES).map(k=>'<option value="'+k+'"'+(k===r.t?' selected':'')+'>'+TYPES[k].n+'</option>').join('')+'</select></td>'+
+  '<td><input data-k="desc" id="rd-'+i+'" type="text" value="'+esc(r.desc)+'" style="min-width:170px"></td>'+
+  '<td><input data-k="s" id="rs-'+i+'" type="date" value="'+esc(r.s)+'"></td>'+
+  '<td><input data-k="e" id="re-'+i+'" type="date" value="'+esc(r.e)+'"></td>'+
+  '<td><input data-k="req" id="rq-'+i+'" type="number" min="0" value="'+(r.req??'')+'" style="width:70px"></td>'+
+  '<td>'+pl(PL_EXT,T.ext)+'</td><td>'+pl(PL,T.ld)+'</td><td>'+pl(PL,T.adj)+'</td>'+
+  '<td style="text-align:center"><input data-k="cp" id="rc-'+i+'" type="checkbox"'+(r.cp?' checked':'')+(dis?' disabled':'')+'></td>'+
+  '<td><select data-k="ok" id="ro-'+i+'"'+(dis?' disabled':'')+'>'+['인정','부분인정','불인정'].map(v=>'<option'+(v===(dis?'불인정':r.ok)?' selected':'')+'>'+v+'</option>').join('')+'</select></td>'+
+  '<td><input data-k="as" id="ras-'+i+'" type="date" value="'+esc(r.as)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>'+
+  '<td><input data-k="ae" id="rae-'+i+'" type="date" value="'+esc(r.ae)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>'+
+  '<td><button class="del" type="button" data-del="'+i+'" aria-label="사유 삭제">×</button></td></tr>';
+}
+function drawRows(){
+  const tb=$('t-reasons').tBodies[0]; tb.innerHTML=S.rows.map(rowHTML).join('');
+}
+$('t-reasons').addEventListener('change',e=>{
+  const tr=e.target.closest('tr'); if(!tr) return; const i=+tr.dataset.i; const k=e.target.dataset.k; if(!k) return; const r=S.rows[i];
+  let v=e.target.type==='checkbox'?e.target.checked:e.target.value;
+  if(k==='req') v=num(v);
+  const oldS=r.s, oldE=r.e; r[k]=v;
+  if(k==='s'||k==='e'){
+    if(r.s&&r.e&&dn(r.e)>=dn(r.s)) r.req=dn(r.e)-dn(r.s)+1;
+    if(r.as===oldS||!r.as) r.as=r.s; if(r.ae===oldE||!r.ae) r.ae=r.e;
+  }
+  if(k==='ok'&&v!=='불인정'){ if(!r.as) r.as=r.s; if(!r.ae) r.ae=r.e; }
+  if(k==='t'&&v==='contractor') r.ok='불인정';
+  save(); drawRows(); render();
+});
+$('t-reasons').addEventListener('click',e=>{ const b=e.target.closest('[data-del]'); if(!b) return; S.rows.splice(+b.dataset.del,1); save(); drawRows(); render(); });
+$('btn-add').addEventListener('click',()=>{ S.rows.push({t:'owner',desc:'',s:'',e:'',req:null,ok:'인정',cp:true,as:'',ae:''}); save(); drawRows(); render(); const last=S.rows.length-1; const el=$('rd-'+last); if(el) el.focus(); });
+
+function admissible(r){ return r.t!=='contractor'&&r.ok!=='불인정'&&r.cp&&r.as&&r.ae&&dn(r.ae)>=dn(r.as); }
+function unionDays(){
+  const set=new Set(); S.rows.forEach(r=>{ if(!admissible(r)) return; for(let d=dn(r.as);d<=dn(r.ae);d++) set.add(d); }); return set;
+}
+
+/* ---------- 기상 ---------- */
+let WX=null; const ROWS={};
+function wxRows(stn){
+  if(ROWS[stn]) return ROWS[stn];
+  const s=WX&&WX.stations[stn]&&WX.stations[stn].daily; if(!s||!s.r) return null;
+  const P=str=>str.split(',').map(v=>v==='x'||v===''?null:+v/10);
+  const tmin=P(s.tmin),tmax=P(s.tmax),rn=P(s.rn),ws=P(s.ws),sd=P(s.sd);
+  const map=new Map(); let i=0;
+  s.r.forEach(([st,cnt])=>{ let d=dn(st); for(let k=0;k<cnt;k++){ map.set(d,{tmin:tmin[i],tmax:tmax[i],rn:rn[i],ws:ws[i],sd:sd[i]}); d++; i++; } });
+  return ROWS[stn]=map;
+}
+function th(){ const g=(id,d)=>{ const v=parseFloat($(id).value); return isNaN(v)?d:v; }; return {rain:g('th-rain',5),wind:g('th-wind',15),hot:g('th-hot',33),cold:g('th-cold',0),snow:g('th-snow',5)}; }
+function flagsOf(x,t){ if(!x) return null; return {rain:x.rn!=null&&x.rn>=t.rain,wind:x.ws!=null&&x.ws>=t.wind,hot:x.tmax!=null&&x.tmax>=t.hot,cold:x.tmax!=null&&x.tmax<=t.cold,snow:x.sd!=null&&x.sd>=t.snow}; }
+const FC=['rain','wind','hot','cold','snow']; const FN={rain:'강우',wind:'강풍',hot:'혹서',cold:'동절기',snow:'강설'};
+function monthProb(stn,t){
+  const map=wxRows(stn); if(!map) return null; const days=Array(12).fill(0), hit=Array(12).fill(0);
+  map.forEach((x,d)=>{ const m=new Date(d*DAY).getUTCMonth(); days[m]++; const f=flagsOf(x,t); if(FC.some(k=>f[k])) hit[m]++; });
+  return days.map((n,m)=>n?hit[m]/n:0);
+}
+function wxCalc(){
+  const res={ok:false};
+  if(!WX) return res; const stn=S.w.stn, s=dn(S.w.s), e=dn(S.w.e); if(!stn||s==null||e==null||e<s) return res;
+  const map=wxRows(stn); if(!map) return res;
+  const t=th(); const prob=monthProb(stn,t); const other=unionDays();
+  let actual=0, overlap=0, missing=0, expected=0; const byF={rain:0,wind:0,hot:0,cold:0,snow:0}; const days=[];
+  for(let d=s;d<=e;d++){
+    const m=new Date(d*DAY).getUTCMonth(); expected+=prob[m];
+    const x=map.get(d); const f=flagsOf(x,t);
+    if(!f){ missing++; days.push({d,f:null}); continue; }
+    const any=FC.some(k=>f[k]); const ov=any&&other.has(d);
+    if(any){ if(ov) overlap++; else { actual++; FC.forEach(k=>{ if(f[k]) byF[k]++; }); } }
+    days.push({d,f,any,ov,x});
+  }
+  const expR=Math.round(expected*10)/10;
+  const excess=Math.max(0,Math.round(actual-expected));
+  return {ok:true,stn,s,e,t,actual,overlap,missing,expected:expR,excess,byF,days,span:e-s+1,lastDay:Math.max(...map.keys())};
+}
+function drawWx(W){
+  const cal=$('wx-cal'), cmp=$('wx-cmp');
+  if(!W.ok){ cal.innerHTML='<div class="hint">관측지점과 검토기간을 입력하면 일별 판정이 표시됩니다.</div>'; cmp.innerHTML=''; $('wx-note').textContent=WX?'검토기간을 확인하십시오.':'기상자료가 없어 기상 검토를 할 수 없습니다.'; $('wx-note').className='note'; return; }
+  const byMonth={};
+  W.days.forEach(o=>{ const dt=new Date(o.d*DAY); const k=dt.getUTCFullYear()+'.'+String(dt.getUTCMonth()+1).padStart(2,'0'); (byMonth[k]=byMonth[k]||[]).push(o); });
+  cal.innerHTML=Object.keys(byMonth).map(k=>{
+    const arr=byMonth[k]; const cells=Array(31).fill(null); arr.forEach(o=>{ cells[new Date(o.d*DAY).getUTCDate()-1]=o; });
+    return '<div class="wx-m"><div class="ml">'+k+'</div><div class="wx-days">'+cells.map((o,i)=>{
+      if(!o) return '<div class="wx-d out"></div>';
+      if(!o.f) return '<div class="wx-d" title="'+ds(o.d)+' 자료 없음">·</div>';
+      if(!o.any) return '<div class="wx-d" title="'+ds(o.d)+' 작업 가능">'+(i+1)+'</div>';
+      const ks=FC.filter(f=>o.f[f]); const col='var(--'+ks[0]+')';
+      const x=o.x; const tip=ds(o.d)+' '+ks.map(f=>FN[f]).join('·')+' | 강수 '+(x.rn??'–')+'mm, 순간풍속 '+(x.ws??'–')+'m/s, 최고 '+(x.tmax??'–')+'℃, 신적설 '+(x.sd??'–')+'cm'+(o.ov?' (다른 사유와 중첩)':'');
+      return '<div class="wx-d f'+(o.ov?' ex':'')+'" style="background:'+col+'" title="'+esc(tip)+'">'+(i+1)+'</div>';
+    }).join('')+'</div></div>';
+  }).join('');
+  const req=num(S.w.req);
+  const box=(l,v,s)=>'<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>';
+  cmp.innerHTML=
+    box('실측 작업제한일',W.actual+'일',FC.filter(k=>W.byF[k]).map(k=>FN[k]+' '+W.byF[k]).join(' · ')||'해당 없음')+
+    box('평년 비작업일수',W.expected+'일','10년 일자료 월별 발생률 × 검토일수')+
+    box('평년 초과(이상기상)',W.excess+'일','실측 − 평년, 반올림')+
+    box('신청 기상일수',req==null?'–':req+'일',req==null?'미입력':(req>W.excess?'초과 신청 '+(req-W.excess)+'일':'신청 범위 내'))+
+    box('중첩 제외',W.overlap+'일','다른 사유 인정기간과 겹친 날');
+  const n=$('wx-note');
+  let msg='검토기간 '+W.span+'일 중 작업제한 기준을 넘은 날은 '+W.actual+'일이고, 같은 기간 평년 비작업일수는 '+W.expected+'일입니다. ';
+  msg+=W.excess>0?'평년을 '+W.excess+'일 초과하여 이상기상으로 볼 수 있습니다.':'평년 범위 안이므로 당초 공기에 이미 반영된 것으로 봅니다.';
+  if(W.missing) msg+=' 관측자료가 없는 날 '+W.missing+'일(자료 기준일 '+ds(W.lastDay)+')은 판정에서 빠졌습니다.';
+  n.textContent=msg; n.className='note '+(W.excess>0?'ok':'');
+}
+function initWx(j,label){
+  WX=j; for(const k in ROWS) delete ROWS[k];
+  const names=Object.keys(j.stations).sort((a,b)=>a.localeCompare(b,'ko'));
+  $('w-stn').innerHTML=names.map(n=>'<option'+(n===S.w.stn?' selected':'')+'>'+n+'</option>').join('');
+  if(!j.stations[S.w.stn]){ S.w.stn=names.includes('목포')?'목포':names[0]; $('w-stn').value=S.w.stn; }
+  $('wx-src').className='note ok';
+  $('wx-src').textContent='연결됨 · '+(j.src||'기상청 ASOS 일자료')+' · '+names.length+'개 지점 · '+(j.updated||'')+' 기준'+(label?' · '+label:'');
+  render();
+}
+fetch('wx.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(j=>{ if(!j||!j.stations) throw 0; initWx(j,'gongsagigan wx.json'); })
+  .catch(()=>{ $('wx-src').className='note warn'; $('wx-src').textContent='wx.json을 불러오지 못했습니다. 아래에서 파일을 직접 올려 주십시오.'; $('wx-drop').hidden=false; render(); });
+$('wx-pick').addEventListener('click',()=>$('wx-file').click());
+function readWxFile(f){ if(!f) return; f.text().then(t=>{ const j=JSON.parse(t); if(!j.stations) throw 0; initWx(j,f.name); toast('기상자료를 불러왔습니다.'); }).catch(()=>toast('wx.json 형식이 아닙니다.')); }
+$('wx-file').addEventListener('change',e=>readWxFile(e.target.files[0]));
+dropZone($('wx-drop'),readWxFile);
+const wxBind=(id,k)=>{ const el=$(id); el.value=S.w[k]??''; el.addEventListener('change',()=>{ S.w[k]=el.value; save(); render(); }); };
+wxBind('w-s','s'); wxBind('w-e','e'); wxBind('w-req','req');
+$('w-stn').addEventListener('change',e=>{ S.w.stn=e.target.value; save(); render(); });
+['rain','wind','hot','cold','snow'].forEach(k=>{ const el=$('th-'+k); el.value=S.w.th[k]; el.addEventListener('change',()=>{ S.w.th[k]=parseFloat(el.value); save(); render(); }); });
+$('w-apply').checked=S.w.apply!==false; $('w-apply').addEventListener('change',e=>{ S.w.apply=e.target.checked; save(); render(); });
+
+/* ---------- 타임라인 ---------- */
+function drawTimeline(){
+  const el=$('timeline'); const rows=S.rows.filter(r=>r.s&&r.e);
+  const pts=[]; rows.forEach(r=>{ pts.push(dn(r.s),dn(r.e)); if(r.as) pts.push(dn(r.as)); if(r.ae) pts.push(dn(r.ae)); });
+  const end=dn(S.b.end); if(end!=null) pts.push(end);
+  if(S.w.s&&S.w.e){ pts.push(dn(S.w.s),dn(S.w.e)); }
+  if(pts.length<2){ el.innerHTML='<div class="hint">사유의 영향기간을 입력하면 타임라인이 그려집니다.</div>'; return; }
+  const lo=Math.min(...pts)-3, hi=Math.max(...pts)+3; const W=1000, L=150, R=16, rowH=26;
+  const lines=rows.length+(S.w.s&&S.w.e?1:0)+1; const H=28+lines*rowH+10;
+  const x=d=>L+(d-lo)/(hi-lo)*(W-L-R);
+  let g='';
+  // 월 눈금
+  const d0=new Date(lo*DAY); let m=Date.UTC(d0.getUTCFullYear(),d0.getUTCMonth()+1,1)/DAY;
+  while(m<hi){ const dd=new Date(m*DAY); g+='<line x1="'+x(m)+'" x2="'+x(m)+'" y1="18" y2="'+(H-6)+'" stroke="var(--line)" stroke-dasharray="2 3"/><text x="'+(x(m)+3)+'" y="12" font-size="11" fill="var(--muted)">'+dd.getUTCFullYear()+'.'+(dd.getUTCMonth()+1)+'</text>'; m=Date.UTC(dd.getUTCFullYear(),dd.getUTCMonth()+1,1)/DAY; }
+  let y=28;
+  rows.forEach((r,i)=>{
+    const T=TYPES[r.t]; g+='<text x="0" y="'+(y+13)+'" font-size="12" fill="var(--sub)">'+(S.rows.indexOf(r)+1)+'. '+esc(T.n).slice(0,11)+'</text>';
+    g+='<rect x="'+x(dn(r.s))+'" y="'+(y+3)+'" width="'+Math.max(2,x(dn(r.e)+1)-x(dn(r.s)))+'" height="16" rx="3" fill="none" stroke="var(--muted)" stroke-dasharray="3 2"/>';
+    if(admissible(r)) g+='<rect x="'+x(dn(r.as))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(r.ae)+1)-x(dn(r.as)))+'" height="12" rx="2" fill="var(--primary)" opacity=".85"/>';
+    y+=rowH;
+  });
+  if(S.w.s&&S.w.e){ g+='<text x="0" y="'+(y+13)+'" font-size="12" fill="var(--sub)">기상 검토기간</text><rect x="'+x(dn(S.w.s))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(S.w.e)+1)-x(dn(S.w.s)))+'" height="12" rx="2" fill="var(--rain)" opacity=".35"/>'; y+=rowH; }
+  // 인정 합집합
+  const U=[...unionDays()].sort((a,b)=>a-b); g+='<text x="0" y="'+(y+13)+'" font-size="12" font-weight="700" fill="var(--text)">인정(중첩 제외)</text>';
+  let st=null,pv=null; const segs=[]; U.forEach(d=>{ if(st==null){st=d;pv=d;} else if(d===pv+1) pv=d; else { segs.push([st,pv]); st=d; pv=d; } }); if(st!=null) segs.push([st,pv]);
+  segs.forEach(([a,b])=>{ g+='<rect x="'+x(a)+'" y="'+(y+5)+'" width="'+Math.max(2,x(b+1)-x(a))+'" height="12" rx="2" fill="var(--ok)"/>'; });
+  if(end!=null&&end>=lo&&end<=hi) g+='<line x1="'+x(end+1)+'" x2="'+x(end+1)+'" y1="18" y2="'+(H-6)+'" stroke="var(--bad)" stroke-width="1.5"/><text x="'+(x(end+1)-4)+'" y="'+(H-10)+'" text-anchor="end" font-size="11" fill="var(--bad)">현재 준공일</text>';
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="사유별 영향기간 타임라인">'+g+'</svg>';
+}
+
+/* ---------- 계산 ---------- */
+function compute(){
+  const W=wxCalc();
+  const reqRows=S.rows.reduce((a,r)=>a+(num(r.req)||0),0);
+  const reqW=num(S.w.req)||0;
+  const reqTotal=num(S.r.days)!=null?num(S.r.days):reqRows+reqW;
+  const U=unionDays(); const unionN=U.size;
+  const sumAdm=S.rows.filter(admissible).reduce((a,r)=>a+dn(r.ae)-dn(r.as)+1,0);
+  const wxDays=(W.ok&&S.w.apply!==false)?Math.min(W.excess, reqW||W.excess):0;
+  const okDays=unionN+wxDays;
+  const end=dn(S.b.end); const newEnd=end!=null?end+okDays:null;
+  const reqDate=dn(S.r.date);
+  let timely=null; if(reqDate!=null&&end!=null) timely=reqDate<=end;
+  const adjRows=S.rows.filter(r=>admissible(r)&&TYPES[r.t].adj==='o');
+  const adjCheck=S.rows.filter(r=>admissible(r)&&TYPES[r.t].adj==='c').length+(wxDays>0?1:0);
+  const actual=dn(S.c.actual); let late=null, ld=null, ldCap=null;
+  if(actual!=null&&newEnd!=null){ late=Math.max(0,actual-newEnd); const amt=num(S.b.amt)||0; ldCap=amt*0.3; ld=Math.min(Math.floor(amt*(S.c.rate||0)/1000*late),ldCap); }
+  let verdict='v-none', vt='검토 전';
+  if(reqTotal>0||S.rows.length){ if(okDays<=0){verdict='v-no';vt='불인정';} else if(okDays<reqTotal){verdict='v-part';vt='부분 인정';} else {verdict='v-ok';vt='인정';} }
+  if(timely===false){ verdict='v-no'; vt='청구시기 경과 · 재검토'; }
+  return {W,reqRows,reqTotal,unionN,sumAdm,wxDays,okDays,end,newEnd,timely,adjRows,adjCheck,late,ld,ldCap,verdict,vt};
+}
+
+/* ---------- 후속조치 ---------- */
+function followups(R){
+  const L=[
+    ['f1','변경계약 체결 (계약기간 변경)',R.okDays>0,'인정일수 '+R.okDays+'일 반영, 변경 준공일 '+dk(R.newEnd)],
+    ['f2','계약이행보증서 보증기간 연장 확인',R.okDays>0,'변경 준공일까지 보증기간이 이어지는지 확인'],
+    ['f3','공사손해보험 등 보험기간 연장',R.okDays>0,'보험증권 기간 변경 제출'],
+    ['f4','변경 예정공정표 제출·승인',R.okDays>0,'주공정 조정 내용 확인'],
+    ['f5','건설사업관리(감리) 용역 기간 연장 검토',R.okDays>0,'용역 계약기간·대가 조정 필요 여부'],
+    ['f6','간접비 계약금액 조정 (실비 범위)',R.adjRows.length>0||R.adjCheck>0,'공기연장 간접비 산정기 결과 반영'],
+    ['f7','하도급 계약기간 변경 통보 확인',R.okDays>0,'하도급 공사기간 연동 여부'],
+    ['f8','에듀파인 계약정보 변경 등록',R.okDays>0,'계약기간·금액 변경 입력'],
+    ['f9','지연배상금 부과 검토',R.late>0,'지체 '+(R.late||0)+'일, '+won(R.ld)]
+  ];
+  $('f-checks').innerHTML=L.map(([k,t,on,why])=>'<label style="'+(on?'':'opacity:.45')+'"><input type="checkbox" id="fc-'+k+'"'+(S.f[k]?' checked':'')+'><span>'+t+'<span class="why">'+(on?why:'해당 없음')+'</span></span></label>').join('');
+  L.forEach(([k])=>$('fc-'+k).addEventListener('change',e=>{ S.f[k]=e.target.checked; save(); }));
+  return L;
+}
+
+/* ---------- 렌더 ---------- */
+let LAST=null;
+function render(){
+  const R=compute(); LAST=R;
+  $('k-req').textContent=R.reqTotal+'일';
+  $('k-req-s').textContent='사유 '+S.rows.length+'건'+(num(S.w.req)?' + 기상 '+num(S.w.req)+'일':'');
+  $('k-ok').textContent=R.okDays+'일';
+  $('k-ok-s').textContent='기간 사유 '+R.unionN+'일 + 이상기상 '+R.wxDays+'일';
+  $('k-end').textContent=R.newEnd!=null?dk(R.newEnd):'–';
+  $('k-end-s').textContent='현재 준공일 '+dk(R.end);
+  $('k-ld').textContent=R.ld==null?'–':(R.late>0?won(R.ld):'없음');
+  $('k-ld-s').textContent=R.ld==null?'실제 준공일 입력 시 산정':(R.late>0?'지체 '+R.late+'일':'변경 준공일 안에 준공');
+  const v=$('sum-verdict'); v.className='verdict '+R.verdict; v.textContent=R.vt;
+  const fl=[];
+  if(R.timely===true) fl.push(['ok','청구시기 적정']); else if(R.timely===false) fl.push(['bad','계약기간 경과 후 청구']);
+  if(R.adjRows.length) fl.push(['ok','계약금액 조정 대상 '+R.adjRows.length+'건']);
+  if(R.adjCheck) fl.push(['warn','금액조정 여부 확인 '+R.adjCheck+'건']);
+  if(R.sumAdm>R.unionN) fl.push(['warn','기간 중첩 '+(R.sumAdm-R.unionN)+'일 제외']);
+  const miss=DOCS.filter(([k])=>!S.r.docs[k]).length; if(miss) fl.push(['warn','증빙 미제출 '+miss+'종']);
+  if(S.rows.some(r=>r.t!=='contractor'&&r.ok!=='불인정'&&!r.cp)) fl.push(['','CP 영향 없는 사유 제외']);
+  $('sum-flags').innerHTML=fl.map(([c,t])=>'<span class="chip '+c+'">'+t+'</span>').join('');
+  // STEP2
+  const j=$('r-judge');
+  if(R.timely==null){ j.className='note'; j.textContent='신청일과 현재 준공예정일을 입력하면 청구 시기를 판정합니다.'; }
+  else if(R.timely){ const left=R.end-dn(S.r.date); j.className='note ok'; j.textContent='준공예정일('+dk(R.end)+')보다 '+left+'일 앞서 청구했습니다. 청구 시기 요건을 충족합니다.'; }
+  else { j.className='note bad'; j.textContent='준공예정일('+dk(R.end)+')이 지난 뒤 청구했습니다. 계약기간 만료 후 청구는 연장 대상이 아닐 수 있으므로 지체 여부와 함께 재검토하십시오.'; }
+  // STEP3
+  const u=$('union-note');
+  u.className='note'; u.innerHTML='인정 사유 '+S.rows.filter(admissible).length+'건의 인정기간 합계 '+R.sumAdm+'일 중 겹치는 '+(R.sumAdm-R.unionN)+'일을 빼고 <b>'+R.unionN+'일</b>을 인정합니다.';
+  drawTimeline();
+  drawWx(R.W);
+  // STEP5
+  const cl=num(S.c.claim), ok=num(S.c.ok); const cn=$('c-note');
+  let t=[];
+  if(!R.adjRows.length&&!R.adjCheck) t.push('금액조정 대상 사유가 없습니다.');
+  else { t.push('금액조정 대상 사유가 있습니다. 연장된 기간에 대해 실비를 넘지 않는 범위에서 조정합니다.'); if(ok!=null) t.push('간접비 인정액 '+won(ok)+(cl!=null?' (청구 대비 '+won(ok-cl)+')':'')+'.'); else t.push('간접비 인정액을 입력하십시오.'); }
+  if(R.late!=null) t.push(R.late>0?'실제 준공일이 변경 준공일보다 '+R.late+'일 늦어 지연배상금 '+won(R.ld)+'이 산정됩니다'+(R.ld>=R.ldCap?' (계약금액 30% 한도 적용)':'')+'.':'실제 준공일이 변경 준공일 이내여서 지연배상금이 없습니다.');
+  cn.textContent=t.join(' ');
+  followups(R);
+}
+
+/* ---------- PDF 자동입력 ---------- */
+function dropZone(el,fn){
+  el.addEventListener('dragover',e=>{ e.preventDefault(); el.classList.add('over'); });
+  el.addEventListener('dragleave',()=>el.classList.remove('over'));
+  el.addEventListener('drop',e=>{ e.preventDefault(); el.classList.remove('over'); fn(e.dataTransfer.files[0]); });
+}
+if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+async function readPdf(f){
+  if(!f) return; const msg=$('pdf-msg');
+  if(!window.pdfjsLib){ msg.textContent='PDF 해석 모듈을 불러오지 못했습니다. 직접 입력하십시오.'; return; }
+  msg.textContent='읽는 중…';
+  try{
+    const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise; let txt='';
+    for(let p=1;p<=Math.min(pdf.numPages,5);p++){ const c=await (await pdf.getPage(p)).getTextContent(); txt+=c.items.map(i=>i.str).join(' ')+'\n'; }
+    const T=txt.replace(/\s+/g,' ');
+    const got=[];
+    const pick=(re)=>{ const m=T.match(re); return m?m[1].trim():null; };
+    const name=pick(/(?:계약명|공사명|건\s*명)\s*[:：]?\s*(.+?)(?=\s+(?:계약번호|계약방법|계약금액|계약일|착공|준공|계약상대자|업체명|$))/);
+    const amt=pick(/(?:계약금액|총\s*계약금액|계약총액)\s*[:：]?\s*(?:금?\s*)?([\d,]{5,})/);
+    const vendor=pick(/(?:계약상대자|업체명|상\s*호)\s*[:：]?\s*(.+?)(?=\s+(?:대표자|사업자|주소|계약|$))/);
+    const dt=s=>{ if(!s) return null; const m=s.match(/(\d{4})[.\-\/년\s]+(\d{1,2})[.\-\/월\s]+(\d{1,2})/); return m?m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0'):null; };
+    const DRE='(\\d{4}[.\\-\\/년\\s]+\\d{1,2}[.\\-\\/월\\s]+\\d{1,2})';
+    let st=dt(pick(new RegExp('착공(?:일|일자|예정일)?\\s*[:：]?\\s*'+DRE)));
+    let en=dt(pick(new RegExp('준공(?:예정)?(?:일|일자)?\\s*[:：]?\\s*'+DRE)));
+    if(!st||!en){ const m=T.match(new RegExp('계약기간\\s*[:：]?\\s*'+DRE+'\\s*[~∼\\-]\\s*'+DRE)); if(m){ st=st||dt(m[1]); en=en||dt(m[2]); } }
+    if(name){ S.b.name=name; got.push('공사명'); }
+    if(amt){ S.b.amt=num(amt); got.push('계약금액'); }
+    if(vendor){ S.b.vendor=vendor; got.push('계약상대자'); }
+    if(st){ S.b.start=st; got.push('착공일'); }
+    if(en){ S.b.end=en; got.push('준공일'); }
+    save(); refreshInputs(); render();
+    msg.textContent=got.length?f.name+' — '+got.join(', ')+' 인식':'인식한 항목이 없습니다. 직접 입력하십시오.';
+  }catch(e){ msg.textContent='PDF를 읽지 못했습니다. 직접 입력하십시오.'; }
+}
+$('pdf-pick').addEventListener('click',()=>$('pdf-file').click());
+$('pdf-file').addEventListener('change',e=>readPdf(e.target.files[0]));
+dropZone($('pdf-drop'),readPdf);
+
+function refreshInputs(){
+  const set=(id,v,amt)=>{ $(id).value=(amt&&v!=null&&v!=='')?Math.round(v).toLocaleString('ko-KR'):(v??''); };
+  set('b-name',S.b.name); set('b-vendor',S.b.vendor); set('b-amt',S.b.amt,true); set('b-start',S.b.start); set('b-end',S.b.end); set('b-round',S.b.round); set('b-prev',S.b.prev);
+  set('r-date',S.r.date); set('r-days',S.r.days); set('r-doc',S.r.doc);
+  set('c-claim',S.c.claim,true); set('c-ok',S.c.ok,true); set('d-actual',S.c.actual); set('d-rate',S.c.rate);
+  set('w-s',S.w.s); set('w-e',S.w.e); set('w-req',S.w.req); if(WX&&WX.stations[S.w.stn]) $('w-stn').value=S.w.stn;
+  ['rain','wind','hot','cold','snow'].forEach(k=>set('th-'+k,S.w.th[k])); $('w-apply').checked=S.w.apply!==false;
+  DOCS.forEach(([k])=>$('doc-'+k).checked=!!S.r.docs[k]);
+}
+
+/* ---------- 새로 작성 (확인 단계 내장) ---------- */
+let resetArm=null;
+$('btn-reset').addEventListener('click',e=>{
+  const b=e.currentTarget;
+  if(!resetArm){ b.textContent='한 번 더 누르면 비웁니다'; b.style.color='var(--bad)'; resetArm=setTimeout(()=>{ resetArm=null; b.textContent='새로 작성'; b.style.color=''; },3000); return; }
+  clearTimeout(resetArm); resetArm=null; b.textContent='새로 작성'; b.style.color='';
+  S={b:{name:'',vendor:'',amt:null,start:'',end:'',round:'0',prev:0},r:{date:'',days:'',doc:'',docs:{}},rows:[],w:{stn:S.w.stn,s:'',e:'',req:'',apply:true,th:{rain:5,wind:15,hot:33,cold:0,snow:5}},c:{claim:null,ok:null,actual:'',rate:0.5},f:{}};
+  save(); refreshInputs(); drawRows(); render(); toast('입력값을 비웠습니다.');
+});
+
+/* ---------- 엑셀 내보내기 ---------- */
+let DL=null; if(window.claude&&window.claude.use) window.claude.use('downloads').then(d=>{ DL=d; });
+async function exportXlsx(){
+  if(!window.ExcelJS){ toast('엑셀 모듈을 불러오지 못했습니다.'); return; }
+  const R=compute(); const wb=new ExcelJS.Workbook(); wb.creator='공사기간 연장 검토';
+  const NAVY='FF1F3864', BLUE='FF256EF4', GRAY='FFF2F2F2', G2='FFD9D9D9';
+  const ws=wb.addWorksheet('연장검토서',{pageSetup:{paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:0.3,right:0.3,top:0.5,bottom:0.5,header:0.2,footer:0.2}}});
+  ws.columns=[{width:5},{width:20},{width:30},{width:13},{width:13},{width:10},{width:10},{width:12},{width:13},{width:13}];
+  const font=(o={})=>Object.assign({name:'맑은 고딕',size:10},o);
+  const border={top:{style:'thin',color:{argb:'FFBFBFBF'}},bottom:{style:'thin',color:{argb:'FFBFBFBF'}},left:{style:'thin',color:{argb:'FFBFBFBF'}},right:{style:'thin',color:{argb:'FFBFBFBF'}}};
+  let r=1;
+  ws.mergeCells(r,1,r,10); const t=ws.getCell(r,1); t.value='공사기간 연장 검토서'; t.font=font({size:20,bold:true,color:{argb:'FFFFFFFF'}}); t.fill={type:'pattern',pattern:'solid',fgColor:{argb:NAVY}}; t.alignment={vertical:'middle',horizontal:'left',indent:1}; ws.getRow(r).height=42; r++;
+  ws.mergeCells(r,1,r,10); ws.getCell(r,1).value='작성일 '+new Date().toLocaleDateString('ko-KR')+' · 테스트용'; ws.getCell(r,1).font=font({size:9,color:{argb:'FF6B7280'}}); r+=2;
+  const sec=(txt)=>{ ws.mergeCells(r,1,r,10); const c=ws.getCell(r,1); c.value=txt; c.font=font({size:11,bold:true,color:{argb:'FFFFFFFF'}}); c.fill={type:'pattern',pattern:'solid',fgColor:{argb:NAVY}}; c.alignment={indent:1,vertical:'middle'}; ws.getRow(r).height=22; r++; };
+  const kv=(pairs)=>{ pairs.forEach(([k,v,fmt])=>{ ws.mergeCells(r,1,r,3); ws.mergeCells(r,4,r,10); const a=ws.getCell(r,1), b=ws.getCell(r,4); a.value=k; b.value=v; a.font=font({bold:true}); b.font=font(); a.fill={type:'pattern',pattern:'solid',fgColor:{argb:GRAY}}; a.border=border; b.border=border; a.alignment={indent:1,vertical:'middle'}; b.alignment={indent:1,vertical:'middle',wrapText:true}; if(fmt) b.numFmt=fmt; r++; }); r++; };
+  sec('1. 검토 결과');
+  kv([['판정',R.vt],['신청 연장일수',R.reqTotal+'일'],['인정 연장일수',R.okDays+'일 (기간 사유 '+R.unionN+'일 + 이상기상 '+R.wxDays+'일)'],['현재 준공예정일',dk(R.end)],['변경 준공일',dk(R.newEnd)],['청구 시기',R.timely==null?'–':(R.timely?'적정 (계약기간 내 청구)':'부적정 (계약기간 경과 후 청구)')]]);
+  sec('2. 계약 기본정보');
+  kv([['공사명',S.b.name],['계약상대자',S.b.vendor],['계약금액',num(S.b.amt),'#,##0"원"'],['착공일',dk(dn(S.b.start))],['기존 연장',['최초 연장','1차 이력','2차 이력','3차 이상'][+S.b.round]+' / 누계 '+(S.b.prev||0)+'일'],['연장 신청일',dk(dn(S.r.date))+(S.r.doc?' ('+S.r.doc+')':'')],['제출 증빙',DOCS.map(([k,l])=>(S.r.docs[k]?'■ ':'□ ')+l).join('\n')]]);
+  sec('3. 사유별 판정');
+  const hd=['#','사유 유형','내용','영향기간','','신청일수','CP영향','판정','인정 시작','인정 종료'];
+  hd.forEach((h,i)=>{ const c=ws.getCell(r,i+1); c.value=h; c.font=font({bold:true}); c.fill={type:'pattern',pattern:'solid',fgColor:{argb:GRAY}}; c.border=border; c.alignment={horizontal:'center',vertical:'middle'}; }); ws.mergeCells(r,4,r,5); r++;
+  S.rows.forEach((x,i)=>{ const vals=[i+1,TYPES[x.t].n,x.desc,ds(dn(x.s)),ds(dn(x.e)),num(x.req),x.cp?'있음':'없음',x.t==='contractor'?'불인정':x.ok,admissible(x)?x.as:'',admissible(x)?x.ae:''];
+    vals.forEach((v,j)=>{ const c=ws.getCell(r,j+1); c.value=v; c.font=font(); c.border=border; c.alignment={vertical:'middle',wrapText:j===2,horizontal:(j===5||j===0)?'center':'left'}; }); r++; });
+  ws.mergeCells(r,1,r,5); ws.getCell(r,1).value='인정기간 합계 '+R.sumAdm+'일 − 중첩 '+(R.sumAdm-R.unionN)+'일 = 인정 '+R.unionN+'일'; ws.getCell(r,1).font=font({bold:true}); ws.getCell(r,1).fill={type:'pattern',pattern:'solid',fgColor:{argb:G2}}; for(let j=6;j<=10;j++) ws.getCell(r,j).fill={type:'pattern',pattern:'solid',fgColor:{argb:G2}}; r+=2;
+  sec('4. 기상 검토 (기상청 ASOS 일자료)');
+  const W=R.W;
+  if(W.ok){ kv([['관측지점',W.stn+(WX&&WX.updated?' (자료 '+WX.updated+' 기준)':'')],['검토기간',dk(W.s)+' ~ '+dk(W.e)+' ('+W.span+'일)'],['작업제한 기준','강우 '+W.t.rain+'mm↑ · 순간풍속 '+W.t.wind+'m/s↑ · 최고기온 '+W.t.hot+'℃↑ / '+W.t.cold+'℃↓ · 신적설 '+W.t.snow+'cm↑'],['실측 작업제한일',W.actual+'일 ('+FC.filter(k=>W.byF[k]).map(k=>FN[k]+' '+W.byF[k]).join(', ')+')'],['평년 비작업일수',W.expected+'일'],['평년 초과(이상기상)',W.excess+'일'],['신청 기상일수',(num(S.w.req)??'–')+'일'],['반영 인정일수',R.wxDays+'일'+(W.overlap?' (다른 사유와 중첩 '+W.overlap+'일 제외)':'')]]); }
+  else kv([['기상 검토','해당 없음']]);
+  sec('5. 계약금액 조정 · 지연배상금');
+  kv([['금액조정 대상',R.adjRows.length+'건'+(R.adjCheck?' / 확인 필요 '+R.adjCheck+'건':'')],['간접비 청구액',num(S.c.claim),'#,##0"원"'],['간접비 인정액',num(S.c.ok),'#,##0"원"'],['실제 준공일',dk(dn(S.c.actual))],['지연배상금',R.ld==null?'–':(R.late>0?Math.round(R.ld).toLocaleString('ko-KR')+'원 (지체 '+R.late+'일 × '+S.c.rate+'‰)':'없음')]]);
+  sec('6. 후속조치');
+  followups(R).forEach(([k,tt,on,why])=>{ ws.mergeCells(r,1,r,1); ws.getCell(r,1).value=S.f[k]?'■':'□'; ws.getCell(r,1).alignment={horizontal:'center'}; ws.mergeCells(r,2,r,5); ws.getCell(r,2).value=tt; ws.mergeCells(r,6,r,10); ws.getCell(r,6).value=on?why:'해당 없음'; [1,2,6].forEach(j=>{ ws.getCell(r,j).font=font({color:{argb:on?'FF212121':'FF9CA3AF'}}); ws.getCell(r,j).border=border; }); r++; });
+  r++; ws.mergeCells(r,1,r,10); ws.getCell(r,1).value='근거: 지방계약법 시행령 제75조제1항(실비 범위 금액조정), 제90조제1항·제3항(책임 없는 지체일수 불산입, 지연배상금 30% 한도). 사유별 금액조정 여부는 지방자치단체 입찰 및 계약 집행기준 공사계약 일반조건 원문 확인 필요.'; ws.getCell(r,1).font=font({size:8,color:{argb:'FF6B7280'}}); ws.getCell(r,1).alignment={wrapText:true}; ws.getRow(r).height=30;
+  // 기상 일자료 시트
+  if(W.ok){ const w2=wb.addWorksheet('기상일자료'); w2.columns=[{header:'일자',width:12},{header:'강수(mm)',width:10},{header:'순간풍속(m/s)',width:13},{header:'최고기온(℃)',width:12},{header:'최저기온(℃)',width:12},{header:'신적설(cm)',width:11},{header:'판정',width:16},{header:'비고',width:14}];
+    w2.getRow(1).eachCell(c=>{ c.font=font({bold:true,color:{argb:'FFFFFFFF'}}); c.fill={type:'pattern',pattern:'solid',fgColor:{argb:NAVY}}; });
+    W.days.forEach(o=>{ const x=o.x||{}; const row=w2.addRow([ds(o.d),x.rn??null,x.ws??null,x.tmax??null,x.tmin??null,x.sd??null,!o.f?'자료 없음':(o.any?FC.filter(k=>o.f[k]).map(k=>FN[k]).join('·'):'작업 가능'),o.ov?'타 사유 중첩':'']); row.font=font(); if(o.any&&!o.ov) row.getCell(7).font=font({bold:true,color:{argb:BLUE}}); });
+  }
+  const buf=await wb.xlsx.writeBuffer();
+  const fname='공사기간연장검토서_'+(S.b.name||'공사').replace(/[\\\/:*?"<>|()]/g,'').slice(0,30)+'.xlsx';
+  if(!DL){ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); a.download=fname; document.body.appendChild(a); a.click(); a.remove(); toast('검토서를 저장했습니다.'); }catch(e){ toast('이 화면에서는 파일 저장을 사용할 수 없습니다.'); } return; }
+  try{ await DL.save({filename:fname,data:new Blob([buf])}); toast('검토서를 저장했습니다.'); }
+  catch(e){ if(e&&e.code==='declined') return; toast('저장하지 못했습니다: '+(e&&e.message||'오류')); }
+}
+$('btn-xlsx').addEventListener('click',exportXlsx);
+
+drawRows(); render();
+})();
+</script>
+
+</body>
+</html>
