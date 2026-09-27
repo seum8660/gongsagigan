@@ -85,8 +85,8 @@ input:disabled,select:disabled{background:var(--line-faint);color:var(--disabled
 .tbl-wrap{overflow-x:auto;border-top:2px solid var(--text)}
 table{border-collapse:collapse;width:100%;font-size:15px}
 th,td{border-bottom:1px solid var(--line-faint);padding:8px;text-align:left;vertical-align:middle}
-th{background:var(--bg-subtle);font-weight:700;color:var(--text);white-space:nowrap;font-size:15px}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+th{background:var(--bg-subtle);font-weight:700;color:var(--text);white-space:nowrap;font-size:15px;text-align:center}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
 td input,td select{height:40px;padding:0 10px;font-size:15px}
 td input[type=date]{min-width:140px}
 td select[data-k="t"]{min-width:190px} td select[data-k="ok"]{min-width:104px}
@@ -328,9 +328,9 @@ const SAMPLE={
 let S;
 function load(){ try{ const j=localStorage.getItem('extReview.v1'); if(j) return JSON.parse(j); }catch(e){} return JSON.parse(JSON.stringify(SAMPLE)); }
 function save(){ try{ localStorage.setItem('extReview.v1',JSON.stringify(S)); }catch(e){} }
-S=load(); if(!S.opt) S.opt={noWe:false};
+S=load(); if(!S.opt) S.opt={noWe:false}; const NEED_MIG=!S.v; S.v=2;
 const wxRow=()=>S.rows.find(r=>r.t==='force');
-if(!wxRow()&&S.w&&S.w.s&&S.w.e&&S.w.apply!==false&&S.w.req!==''&&S.w.req!=null){ const k=S.rows.findIndex(r=>r.t==='contractor'); S.rows.splice(k<0?S.rows.length:k,0,{t:'force',desc:'이상기상',s:S.w.s,e:S.w.e,req:num(S.w.req),ok:'인정',cp:true,as:'',ae:''}); }
+if(NEED_MIG&&!wxRow()&&S.w&&S.w.s&&S.w.e&&S.w.apply!==false&&S.w.req!==''&&S.w.req!=null){ const k=S.rows.findIndex(r=>r.t==='contractor'); S.rows.splice(k<0?S.rows.length:k,0,{t:'force',desc:'이상기상',s:S.w.s,e:S.w.e,req:num(S.w.req),ok:'인정',cp:true,as:'',ae:''}); }
 function syncWxFromRow(){ const r=wxRow(); if(!r) return; S.w.s=r.s; S.w.e=r.e; S.w.req=r.req??''; ['w-s','w-e','w-req'].forEach((id,j)=>{ const el=$(id); if(el) el.value=[S.w.s,S.w.e,S.w.req][j]??''; }); }
 const isWe=d=>{ const w=new Date(d*DAY).getUTCDay(); return w===0||w===6; };
 const skipDay=d=>S.opt.noWe&&isWe(d);
@@ -432,11 +432,13 @@ function wxCalc(){
   let weSkip=0;
   for(let d=s;d<=e;d++){
     if(skipDay(d)){ weSkip++; days.push({d,we:true}); continue; }
-    const m=new Date(d*DAY).getUTCMonth(); expected+=prob[m];
+    const m=new Date(d*DAY).getUTCMonth();
     const x=map.get(d); const f=flagsOf(x,t);
     if(!f){ missing++; days.push({d,f:null}); continue; }
-    const any=FC.some(k=>f[k]); const ov=any&&other.has(d);
-    if(any){ if(ov) overlap++; else { actual++; FC.forEach(k=>{ if(f[k]) byF[k]++; }); } }
+    const any=FC.some(k=>f[k]); const ov=other.has(d);
+    if(ov){ overlap++; days.push({d,f,any,ov,x}); continue; }  /* 다른 사유 인정기간: 실측·평년 모두에서 제외 */
+    expected+=prob[m];
+    if(any){ actual++; FC.forEach(k=>{ if(f[k]) byF[k]++; }); }
     days.push({d,f,any,ov,x});
   }
   const expR=Math.round(expected*10)/10;
@@ -467,11 +469,13 @@ function drawWx(W){
     box('평년 비작업일수',W.expected+'일','10년 일자료 월별 발생률 × 검토일수'+(W.weSkip?'(주말 제외)':''))+
     box('평년 초과(이상기상)',W.excess+'일','실측 − 평년, 반올림')+
     box('신청 기상일수',req==null?'–':req+'일',req==null?'미입력':(req>W.excess?'초과 신청 '+(req-W.excess)+'일':'신청 범위 내'))+
-    box('중첩 제외',W.overlap+'일','다른 사유 인정기간과 겹친 날');
+    box('중첩 제외',W.overlap+'일','다른 사유 인정기간과 겹쳐 실측·평년에서 뺀 날');
   const n=$('wx-note');
-  let msg=(W.weSkip?'주말 '+W.weSkip+'일을 빼고 ':'')+'검토기간 '+(W.span-W.weSkip)+'일 중 작업제한 기준을 넘은 날은 '+W.actual+'일이고, 같은 기간 평년 비작업일수는 '+W.expected+'일입니다. ';
+  const netN=W.span-W.weSkip-W.overlap-W.missing;
+  let msg=[(W.weSkip?'주말 '+W.weSkip+'일':''),(W.overlap?'다른 사유와 겹친 '+W.overlap+'일':''),(W.missing?'자료 없는 '+W.missing+'일':'')].filter(Boolean).join(', ');
+  msg=(msg?msg+'을 빼고 ':'')+'검토대상 '+netN+'일 중 작업제한 기준을 넘은 날은 '+W.actual+'일이고, 같은 기간 평년 비작업일수는 '+W.expected+'일입니다. ';
   msg+=W.excess>0?'평년을 '+W.excess+'일 초과하여 이상기상으로 볼 수 있습니다.':'평년 범위 안이므로 당초 공기에 이미 반영된 것으로 봅니다.';
-  if(W.missing) msg+=' 관측자료가 없는 날 '+W.missing+'일(자료 기준일 '+ds(W.lastDay)+')은 판정에서 빠졌습니다.';
+  if(W.missing) msg+=' 기상자료는 '+ds(W.lastDay)+'까지 있습니다.';
   n.textContent=msg; n.className='note '+(W.excess>0?'ok':'');
 }
 function initWx(j,label){
@@ -481,7 +485,7 @@ function initWx(j,label){
   if(!j.stations[S.w.stn]){ S.w.stn=names.includes('목포')?'목포':names[0]; $('w-stn').value=S.w.stn; }
   $('wx-src').className='note ok';
   $('wx-src').textContent='연결됨 · '+(j.src||'기상청 ASOS 일자료')+' · '+names.length+'개 지점 · '+(j.updated||'')+' 기준'+(label?' · '+label:'');
-  render();
+  drawRows(); render();
 }
 fetch('wx.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(j=>{ if(!j||!j.stations) throw 0; initWx(j,'gongsagigan wx.json'); })
   .catch(()=>{ $('wx-src').className='note warn'; $('wx-src').textContent='wx.json을 불러오지 못했습니다. 아래에서 파일을 직접 올려 주십시오.'; $('wx-drop').hidden=false; render(); });
@@ -537,7 +541,8 @@ function compute(){
   const sumAdm=S.rows.filter(admissible).reduce((a,r)=>a+countDays(dn(r.as),dn(r.ae)),0);
   let weEx=0; S.rows.filter(admissible).forEach(r=>{ for(let d=dn(r.as);d<=dn(r.ae);d++) if(skipDay(d)) weEx++; });
   const wxOn=!!(wr&&wr.ok!=='불인정'&&wr.cp);
-  const wxDays=(W.ok&&wxOn)?Math.min(W.excess, reqW||W.excess):0;
+  const reqWv=wr?num(wr.req):null;
+  const wxDays=(W.ok&&wxOn)?(reqWv!=null?Math.min(W.excess,reqWv):W.excess):0;
   const okDays=unionN+wxDays;
   const end=dn(S.b.end); const newEnd=end!=null?end+okDays:null;
   const reqDate=dn(S.r.date);
@@ -583,6 +588,9 @@ function render(){
   if(R.timely===true) fl.push(['ok','청구시기 적정']); else if(R.timely===false) fl.push(['bad','계약기간 경과 후 청구']);
   if(R.sumAdm>R.unionN) fl.push(['warn','기간 중첩 '+(R.sumAdm-R.unionN)+'일 제외']);
   if(S.opt.noWe) fl.push(['','주말 제외 적용']);
+  const badP=S.rows.filter(r=>r.s&&r.e&&dn(r.e)<dn(r.s)).length; if(badP) fl.push(['bad','영향기간 종료일이 시작일보다 빠른 사유 '+badP+'건']);
+  const badA=S.rows.filter(r=>r.t!=='contractor'&&r.t!=='force'&&r.ok!=='불인정'&&r.cp&&(!r.as||!r.ae||dn(r.ae)<dn(r.as))).length; if(badA) fl.push(['bad','인정기간 미입력·오류 '+badA+'건']);
+  const outA=S.rows.filter(r=>admissible(r)&&r.s&&r.e&&(dn(r.as)<dn(r.s)||dn(r.ae)>dn(r.e))).length; if(outA) fl.push(['warn','인정기간이 영향기간을 벗어난 사유 '+outA+'건']);
   const miss=DOCS.filter(([k])=>!S.r.docs[k]).length; if(miss) fl.push(['warn','증빙 미제출 '+miss+'종']);
   if(S.rows.some(r=>r.t!=='contractor'&&r.ok!=='불인정'&&!r.cp)) fl.push(['','CP 영향 없는 사유 제외']);
   $('sum-flags').innerHTML=fl.map(([c,t])=>'<span class="chip '+c+'">'+t+'</span>').join('');
@@ -657,7 +665,7 @@ $('btn-reset').addEventListener('click',e=>{
   const b=e.currentTarget;
   if(!resetArm){ b.textContent='한 번 더 누르면 비웁니다'; b.style.color='var(--bad)'; resetArm=setTimeout(()=>{ resetArm=null; b.textContent='새로 작성'; b.style.color=''; },3000); return; }
   clearTimeout(resetArm); resetArm=null; b.textContent='새로 작성'; b.style.color='';
-  S={b:{name:'',vendor:'',amt:null,start:'',end:'',round:'0',prev:0},r:{date:'',days:'',doc:'',docs:{}},rows:[],w:{stn:S.w.stn,s:'',e:'',req:'',th:{rain:5,wind:15,hot:33,cold:0,snow:5}},c:{claim:null,ok:null,actual:'',rate:0.5},f:{},opt:{noWe:false}};
+  S={b:{name:'',vendor:'',amt:null,start:'',end:'',round:'0',prev:0},r:{date:'',days:'',doc:'',docs:{}},v:2,rows:[],w:{stn:S.w.stn,s:'',e:'',req:'',th:{rain:5,wind:15,hot:33,cold:0,snow:5}},c:{claim:null,ok:null,actual:'',rate:0.5},f:{},opt:{noWe:false}};
   $('opt-we').checked=false;
   save(); refreshInputs(); drawRows(); render(); toast('입력값을 비웠습니다.');
 });
@@ -692,7 +700,7 @@ async function exportXlsx(){
   if(W.ok){ kv([['관측지점',W.stn+(WX&&WX.updated?' (자료 '+WX.updated+' 기준)':'')],['검토기간',dk(W.s)+' ~ '+dk(W.e)+' ('+W.span+'일)'],['작업제한 기준','강우 '+W.t.rain+'mm↑ · 순간풍속 '+W.t.wind+'m/s↑ · 최고기온 '+W.t.hot+'℃↑ / '+W.t.cold+'℃↓ · 신적설 '+W.t.snow+'cm↑'],['실측 작업제한일',W.actual+'일 ('+FC.filter(k=>W.byF[k]).map(k=>FN[k]+' '+W.byF[k]).join(', ')+')'],['평년 비작업일수',W.expected+'일'],['평년 초과(이상기상)',W.excess+'일'],['신청 기상일수',(num(S.w.req)??'–')+'일'],['반영 인정일수',R.wxDays+'일'+(W.overlap?' (다른 사유와 중첩 '+W.overlap+'일 제외)':'')]]); }
   else kv([['기상 검토','해당 없음']]);
   sec('5. 후속조치');
-  followups(R).forEach(([k,tt,on,why])=>{ ws.mergeCells(r,1,r,1); ws.getCell(r,1).value=S.f[k]?'■':'□'; ws.getCell(r,1).alignment={horizontal:'center'}; ws.mergeCells(r,2,r,5); ws.getCell(r,2).value=tt; ws.mergeCells(r,6,r,10); ws.getCell(r,6).value=on?why:'해당 없음'; [1,2,6].forEach(j=>{ ws.getCell(r,j).font=font({color:{argb:on?'FF212121':'FF9CA3AF'}}); ws.getCell(r,j).border=border; }); r++; });
+  followups(R).forEach(([k,tt,on,why])=>{ ws.getCell(r,1).value=S.f[k]?'■':'□'; ws.getCell(r,1).alignment={horizontal:'center'}; ws.mergeCells(r,2,r,5); ws.getCell(r,2).value=tt; ws.mergeCells(r,6,r,10); ws.getCell(r,6).value=on?why:'해당 없음'; [1,2,6].forEach(j=>{ ws.getCell(r,j).font=font({color:{argb:on?'FF212121':'FF9CA3AF'}}); ws.getCell(r,j).border=border; }); r++; });
   r++; ws.mergeCells(r,1,r,10); ws.getCell(r,1).value='근거: 지방계약법 시행령 제90조제1항(계약상대자 책임 없는 지체일수 불산입). 계약기간 연장 청구 절차는 지방자치단체 입찰 및 계약 집행기준 공사계약 일반조건 원문 확인 필요.'; ws.getCell(r,1).font=font({size:8,color:{argb:'FF6B7280'}}); ws.getCell(r,1).alignment={wrapText:true}; ws.getRow(r).height=30;
   // 기상 일자료 시트
   if(W.ok){ const w2=wb.addWorksheet('기상일자료'); w2.columns=[{header:'일자',width:12},{header:'강수(mm)',width:10},{header:'순간풍속(m/s)',width:13},{header:'최고기온(℃)',width:12},{header:'최저기온(℃)',width:12},{header:'신적설(cm)',width:11},{header:'판정',width:16},{header:'비고',width:14}];
@@ -765,7 +773,7 @@ $('btn-pdf').addEventListener('click',exportPdf);
 
 
 $('opt-we').checked=!!S.opt.noWe;
-$('opt-we').addEventListener('change',e=>{ S.opt.noWe=e.target.checked; S.rows.forEach(r=>{ if(r.s&&r.e&&dn(r.e)>=dn(r.s)) r.req=countDays(dn(r.s),dn(r.e)); }); save(); drawRows(); render(); });
+$('opt-we').addEventListener('change',e=>{ const before=S.rows.map(r=>(r.s&&r.e&&dn(r.e)>=dn(r.s))?countDays(dn(r.s),dn(r.e)):null); S.opt.noWe=e.target.checked; S.rows.forEach((r,i)=>{ if(r.t==='force'||before[i]==null) return; if(num(r.req)===before[i]) r.req=countDays(dn(r.s),dn(r.e)); }); save(); drawRows(); render(); });
 drawRows(); render();
 })();
 </script>
