@@ -10,147 +10,145 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 :root{
-  --primary:#256EF4; --primary-strong:#0B50D0; --primary-soft:#ECF2FE;
-  --text:#1E2124; --sub:#464C53; --muted:#6D7882; --line:#CDD1D5; --line-soft:#E6E8EA;
-  --bg:#F4F5F6; --surface:#FFFFFF; --surface-2:#F8F9FA;
-  --ok:#228738; --ok-soft:#EAF6EC; --warn:#8A5C00; --warn-soft:#FFF3DB; --bad:#DE3412; --bad-soft:#FDEFEC;
-  --rain:#2F7FE0; --wind:#7A5AF0; --hot:#E0612F; --cold:#1BA3B8; --snow:#8FA3B8;
-  --radius:8px;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --primary:#5B93F7; --primary-strong:#8AB2FA; --primary-soft:#1B2A45;
-    --text:#E8EAED; --sub:#C3C8CE; --muted:#98A1AB; --line:#3A4048; --line-soft:#2C3137;
-    --bg:#131619; --surface:#1B1F23; --surface-2:#22272C;
-    --ok:#5CC274; --ok-soft:#18301E; --warn:#F2C25C; --warn-soft:#352A12; --bad:#FF7B5E; --bad-soft:#3A1E18;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --primary:#5B93F7; --primary-strong:#8AB2FA; --primary-soft:#1B2A45;
-  --text:#E8EAED; --sub:#C3C8CE; --muted:#98A1AB; --line:#3A4048; --line-soft:#2C3137;
-  --bg:#131619; --surface:#1B1F23; --surface-2:#22272C;
-  --ok:#5CC274; --ok-soft:#18301E; --warn:#F2C25C; --warn-soft:#352A12; --bad:#FF7B5E; --bad-soft:#3A1E18;
+  color-scheme:light;
+  --primary:#256EF4; --primary-strong:#0B50D0; --primary-press:#083891; --primary-soft:#ECF2FE; --primary-line:#D8E5FD;
+  --ai:linear-gradient(102deg,#0FB87D 10%,#256EF4 90%);
+  --secondary-soft:#EEF2F7; --secondary:#346FB2;
+  --text:#1E2124; --sub:#464C53; --muted:#6D7882; --disabled:#8A949E;
+  --line:#B1B8BE; --line-soft:#CDD1D5; --line-faint:#E6E8EA; --line-strong:#58616A;
+  --bg:#FFFFFF; --bg-subtle:#F4F5F6; --surface:#FFFFFF; --surface-2:#F4F5F6; --info:#E7F4FE;
+  --ok:#267337; --ok-soft:#EAF6EC; --warn:#8A5C00; --warn-soft:#FFF3DB; --bad:#BD2C0F; --bad-solid:#DE3412; --bad-soft:#FDEFEC;
+  --rain:#256EF4; --wind:#7A5AF0; --hot:#E0612F; --cold:#1BA3B8; --snow:#8A949E;
+  --shadow-sm:0 2px 8px 0 rgba(0,0,0,.04); --shadow-md:0 6px 8px 0 rgba(37,110,244,.10);
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--text);font-family:"Pretendard GOV","Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6;margin:0}
-.gov{background:var(--surface);border-bottom:1px solid var(--line-soft)}
-.gov-in{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:6px;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.gov-in b{color:var(--sub);font-weight:500}
-header.top{background:var(--surface);border-bottom:2px solid var(--primary)}
-.top-in{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:18px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-h1{font-size:24px;margin:0;letter-spacing:-.02em;text-wrap:balance}
-.crumb{font-size:13px;color:var(--muted);margin-bottom:2px}
-.test{display:inline-block;font-size:12px;font-weight:700;color:var(--bad);border:1px solid var(--bad);border-radius:4px;padding:1px 8px;margin-left:8px;vertical-align:middle}
+body{background:var(--bg-subtle);color:var(--text);font-family:"Pretendard GOV","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:17px;line-height:1.5;letter-spacing:-.01em;margin:0}
+.masthead{background:var(--secondary-soft);font-size:15px;color:var(--sub)}
+.masthead-in{max-width:1248px;margin:0 auto;padding-inline:24px;min-height:32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+header.top{background:#fff;border-bottom:1px solid var(--line-faint)}
+.top-in{max-width:1248px;margin:0 auto;padding-inline:24px;padding-block:20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;gap:12px;align-items:center}
+.brand-mark{width:44px;height:44px;border-radius:50%;padding:2px;background:var(--ai);flex:none}
+.brand-mark span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:#fff;color:var(--primary)}
+h1{font-size:28px;line-height:1.35;margin:0;font-weight:700;text-wrap:balance}
+.crumb{font-size:15px;color:var(--muted)}
+.test{display:inline-flex;align-items:center;height:24px;font-size:15px;font-weight:700;color:var(--bad);background:var(--bad-soft);border-radius:4px;padding:0 8px;margin-left:10px;vertical-align:4px}
 .top-actions{display:flex;gap:8px;flex-wrap:wrap}
-main{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:grid;gap:20px}
-.btn{font:inherit;font-size:14px;font-weight:500;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:38px}
-.btn:hover{border-color:var(--primary);color:var(--primary)}
+main{max-width:1248px;margin:0 auto;padding-inline:24px;padding-block:32px 56px;display:grid;gap:24px}
+.btn{font:inherit;font-size:17px;font-weight:700;border-radius:8px;border:1px solid var(--line-strong);background:transparent;color:var(--text);padding:0 20px;height:48px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background-color .15s ease-in-out}
+.btn:hover{background:var(--bg-subtle)} .btn:active{background:var(--line-faint)}
 .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
-.btn.primary:hover{background:var(--primary-strong);color:#fff}
-.btn.sm{font-size:13px;padding:4px 10px;min-height:30px}
-.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-/* summary */
-.summary{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:18px 20px;display:grid;gap:14px}
-.sum-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.sum-head h2{margin:0;font-size:17px}
-.verdict{font-weight:700;font-size:14px;border-radius:999px;padding:4px 14px}
-.v-ok{background:var(--ok-soft);color:var(--ok)} .v-part{background:var(--warn-soft);color:var(--warn)} .v-no{background:var(--bad-soft);color:var(--bad)} .v-none{background:var(--surface-2);color:var(--muted)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.kpi{background:var(--surface-2);border-radius:6px;padding:10px 14px}
-.kpi .l{font-size:12.5px;color:var(--muted)}
-.kpi .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.kpi .s{font-size:12.5px;color:var(--sub)}
+.btn.primary:hover{background:var(--primary-strong)} .btn.primary:active{background:var(--primary-press)}
+.btn.secondary{background:var(--primary-soft);color:var(--primary-strong);border-color:var(--primary)}
+.btn.secondary:hover{background:var(--primary-line)}
+.btn.sm{font-size:15px;height:40px;padding:0 16px}
+.btn:focus-visible{outline:2px solid #fff;box-shadow:0 0 0 4px var(--primary)}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-line)}
+/* 요약: 폴더 탭 패널 */
+.sum-tabs{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.sum-tab{display:inline-block;padding:12px 20px 10px;font-weight:700;font-size:15px;line-height:1;color:var(--primary-strong);background:var(--info);border:1px solid var(--primary-line);border-bottom:0;border-radius:12px 12px 0 0}
+.summary{background:var(--info);border:1px solid var(--primary-line);border-radius:0 16px 16px 16px;box-shadow:var(--shadow-sm);padding:16px;display:grid;gap:12px}
+.sum-head{display:none}
+.verdict{display:inline-flex;align-items:center;height:32px;font-weight:700;font-size:15px;border-radius:999px;padding:0 16px;margin-bottom:6px}
+.v-ok{background:var(--ok-soft);color:var(--ok)} .v-part{background:var(--warn-soft);color:var(--warn)} .v-no{background:var(--bad-soft);color:var(--bad)} .v-none{background:#fff;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:#fff;border-radius:12px;padding:16px}
+.kpi .l{font-size:15px;color:var(--sub)}
+.kpi .v{font-size:24px;font-weight:700;line-height:1.4;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:13px;color:var(--muted)}
 .flags{display:flex;gap:8px;flex-wrap:wrap}
-.chip{font-size:12.5px;border-radius:4px;padding:2px 8px;border:1px solid var(--line);color:var(--sub);background:var(--surface)}
-.chip.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
-.chip.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
-.chip.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
-/* steps */
-section.step{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden}
-.step-h{display:flex;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
-.step-n{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:.06em}
-.step-h h2{margin:0;font-size:17px}
-.step-h p{margin:0;font-size:13px;color:var(--muted);flex-basis:100%}
-.step-b{padding:18px 20px;display:grid;gap:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 16px}
-label.f{display:grid;gap:4px;font-size:13px;color:var(--sub);font-weight:500}
-input,select,textarea{font:inherit;font-size:14px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-height:38px;width:100%}
+.chip{display:inline-flex;align-items:center;height:24px;font-size:13px;font-weight:700;border-radius:4px;padding:0 8px;background:#fff;color:var(--sub);border:1px solid var(--line-soft)}
+.chip.ok{border-color:transparent;color:var(--ok);background:var(--ok-soft)}
+.chip.warn{border-color:transparent;color:var(--warn);background:var(--warn-soft)}
+.chip.bad{border-color:transparent;color:var(--bad);background:var(--bad-soft)}
+/* 단계 카드 */
+section.step{background:#fff;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+.step-h{display:flex;align-items:center;gap:12px;padding:20px 24px 16px;border-bottom:1px solid var(--line-faint);flex-wrap:wrap}
+.step-n{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:4px;background:var(--primary-soft);color:var(--primary-strong);font-size:13px;font-weight:700}
+.step-h h2{margin:0;font-size:22px;line-height:1.5}
+.step-h p{margin:0;font-size:15px;color:var(--sub);flex-basis:100%}
+.step-b{padding:20px 24px 24px;display:grid;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+label.f{display:grid;gap:6px;font-size:15px;color:var(--text);font-weight:700;align-content:start}
+input,select,textarea{font:inherit;font-size:17px;font-weight:400;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:8px;padding:0 14px;height:48px;width:100%}
 input[type=number]{font-variant-numeric:tabular-nums;text-align:right}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
-input[type=checkbox]{width:18px;height:18px;min-height:0;accent-color:var(--primary)}
-.hint{font-size:12.5px;color:var(--muted)}
-.note{font-size:13px;border-radius:6px;padding:10px 12px;background:var(--surface-2);color:var(--sub)}
+input[type=checkbox]{width:20px;height:20px;padding:0;accent-color:var(--primary);flex:none;margin-top:2px}
+input:disabled,select:disabled{background:var(--line-faint);color:var(--disabled)}
+.hint{font-size:13px;color:var(--muted);font-weight:400}
+.note{font-size:15px;border-radius:8px;padding:12px 16px;background:var(--bg-subtle);color:var(--sub)}
 .note.ok{background:var(--ok-soft);color:var(--ok)} .note.warn{background:var(--warn-soft);color:var(--warn)} .note.bad{background:var(--bad-soft);color:var(--bad)}
-.drop{border:1.5px dashed var(--line);border-radius:6px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--sub)}
+.drop{border:1px dashed var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--sub);background:var(--bg-subtle)}
 .drop.over{border-color:var(--primary);background:var(--primary-soft)}
-.tbl-wrap{overflow-x:auto;border:1px solid var(--line-soft);border-radius:6px}
-table{border-collapse:collapse;width:100%;font-size:13.5px}
-th,td{border-bottom:1px solid var(--line-soft);padding:7px 8px;text-align:left;vertical-align:middle}
-th{background:var(--surface-2);font-weight:500;color:var(--sub);white-space:nowrap;font-size:12.5px}
+.tbl-wrap{overflow-x:auto;border-top:2px solid var(--text)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border-bottom:1px solid var(--line-faint);padding:8px;text-align:left;vertical-align:middle}
+th{background:var(--bg-subtle);font-weight:700;color:var(--text);white-space:nowrap;font-size:15px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-td input,td select{min-height:32px;padding:4px 7px;font-size:13px}
-td input[type=date]{min-width:128px}
-.tbl-rules{min-width:1050px}
-.pill{font-size:12px;border-radius:4px;padding:1px 6px;white-space:nowrap}
+td input,td select{height:40px;padding:0 10px;font-size:15px}
+td input[type=date]{min-width:140px}
+td select[data-k="t"]{min-width:190px} td select[data-k="ok"]{min-width:104px}
+.tbl-rules{min-width:1280px}
+.pill{display:inline-flex;align-items:center;height:24px;font-size:13px;font-weight:700;border-radius:4px;padding:0 8px;white-space:nowrap}
 .p-o{background:var(--ok-soft);color:var(--ok)} .p-x{background:var(--bad-soft);color:var(--bad)} .p-c{background:var(--warn-soft);color:var(--warn)}
-.row-x td{opacity:.62}
-.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px}
-.del:hover{color:var(--bad)}
-/* timeline */
-.tl{position:relative;border:1px solid var(--line-soft);border-radius:6px;padding:12px 12px 8px;background:var(--surface-2);overflow-x:auto}
+.row-x td{opacity:.6}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:6px;border-radius:6px}
+.del:hover{color:var(--bad);background:var(--bad-soft)}
+.tl{border:1px solid var(--line-faint);border-radius:12px;padding:14px;background:#fff;overflow-x:auto}
 .tl svg{display:block;min-width:640px;width:100%}
-/* weather */
-.wx-bars{display:grid;gap:10px}
 .wx-cal{display:grid;gap:8px}
-.wx-m{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center}
-.wx-m .ml{font-size:12.5px;color:var(--sub);font-variant-numeric:tabular-nums}
-.wx-days{display:grid;grid-template-columns:repeat(31,minmax(14px,1fr));gap:2px;min-width:480px}
-.wx-d{height:22px;border-radius:3px;background:var(--line-soft);position:relative;font-size:9.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.wx-m{display:grid;grid-template-columns:72px 1fr;gap:8px;align-items:center}
+.wx-m .ml{font-size:15px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
+.wx-days{display:grid;grid-template-columns:repeat(31,minmax(16px,1fr));gap:3px;min-width:560px}
+.wx-d{height:28px;border-radius:4px;background:var(--line-faint);font-size:11px;color:var(--muted);display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
 .wx-d.out{background:transparent}
 .wx-d.f{color:#fff;font-weight:700}
 .wx-d.ex{outline:2px solid var(--text);outline-offset:-2px;opacity:.45}
 .wx-scroll{overflow-x:auto}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--sub)}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
-.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.checks{display:grid;gap:8px}
-.checks label{display:flex;gap:10px;align-items:flex-start;font-size:14px}
-.checks .why{font-size:12.5px;color:var(--muted);display:block}
-.law{font-size:12.5px;color:var(--muted);line-height:1.7}
-.law b{color:var(--sub);font-weight:500}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);padding:10px 16px;border-radius:6px;font-size:14px;z-index:10}
-footer{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 32px;font-size:12px;color:var(--muted)}
-@media (max-width:560px){ h1{font-size:20px} .step-b,.step-h,.summary{padding-inline:14px} }
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;color:var(--sub)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.cmp .kpi{background:var(--bg-subtle)}
+.checks{display:grid;gap:10px}
+.checks label{display:flex;gap:12px;align-items:flex-start;font-size:17px}
+.checks .why{font-size:15px;color:var(--sub);display:block}
+.law{font-size:15px;color:var(--sub);line-height:1.7}
+.law b{color:var(--text);font-weight:700}
+.apply{display:flex;gap:12px;align-items:center;font-size:17px;font-weight:700}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--text);color:#fff;padding:12px 20px;border-radius:8px;font-size:15px;z-index:10;box-shadow:0 16px 24px rgba(0,0,0,.12)}
+footer{background:#fff;border-top:1px solid var(--line-faint)}
+.foot-in{max-width:1248px;margin:0 auto;padding-inline:24px;padding-block:20px 32px;font-size:13px;color:var(--muted)}
+@media (max-width:768px){ .masthead-in,.top-in,main,.foot-in{padding-inline:16px} h1{font-size:24px} .step-b,.step-h{padding-inline:16px} .brand-mark{display:none} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
-<div class="gov"><div class="gov-in"><b>전라남도교육청</b><span>·</span><span>계약관리·정산 도구 모음</span></div></div>
+<div class="masthead" role="note"><div class="masthead-in"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#346FB2" stroke-width="1.5"/><path d="M5 8.2l2 2 4-4" fill="none" stroke="#346FB2" stroke-width="1.5" stroke-linecap="round"/></svg><span>전라남도교육청 계약관리·정산 도구 모음 · 내부 검토용</span></div></div>
 <header class="top"><div class="top-in">
-  <div>
-    <div class="crumb">계약관리 › 계약기간 변경</div>
-    <h1>공사기간 연장 검토<span class="test">테스트용</span></h1>
+  <div class="brand">
+    <span class="brand-mark"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h5M8 17h8"/></svg></span></span>
+    <div><div class="crumb">계약관리 › 계약기간 변경</div>
+    <h1>공사기간 연장 검토<span class="test">테스트용</span></h1></div>
   </div>
   <div class="top-actions">
-    <button class="btn" id="btn-reset" type="button">새로 작성</button>
-    <button class="btn primary" id="btn-xlsx" type="button">검토서 엑셀 내보내기</button>
+    <button class="btn sm" id="btn-reset" type="button">새로 작성</button>
+    <button class="btn primary sm" id="btn-xlsx" type="button">검토서 엑셀 내보내기</button>
   </div>
 </div></header>
 
 <main>
   <!-- 요약 -->
+  <div>
+  <div class="sum-tabs"><span class="sum-tab">검토 결과 요약</span><span class="verdict v-none" id="sum-verdict">검토 전</span></div>
   <div class="summary" aria-live="polite">
-    <div class="sum-head"><h2>검토 결과 요약</h2><span class="verdict v-none" id="sum-verdict">검토 전</span></div>
     <div class="kpis">
       <div class="kpi"><div class="l">신청 연장일수</div><div class="v" id="k-req">0일</div><div class="s" id="k-req-s">사유 0건</div></div>
       <div class="kpi"><div class="l">인정 연장일수</div><div class="v" id="k-ok">0일</div><div class="s" id="k-ok-s">중첩 제외 후</div></div>
       <div class="kpi"><div class="l">변경 준공일</div><div class="v" id="k-end">–</div><div class="s" id="k-end-s">현재 준공일 –</div></div>
-      <div class="kpi"><div class="l">지연배상금</div><div class="v" id="k-ld">–</div><div class="s" id="k-ld-s">실제 준공일 입력 시 산정</div></div>
     </div>
     <div class="flags" id="sum-flags"></div>
+  </div>
   </div>
 
   <!-- STEP 1 -->
@@ -159,7 +157,7 @@ footer{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 32px;f
     <div class="step-b">
       <div class="drop" id="pdf-drop">
         <input type="file" id="pdf-file" accept="application/pdf" hidden>
-        <button class="btn sm" type="button" id="pdf-pick">계약정보 PDF 선택</button>
+        <button class="btn secondary sm" type="button" id="pdf-pick">계약정보 PDF 선택</button>
         <span id="pdf-msg">또는 PDF 파일을 여기에 끌어다 놓으십시오.</span>
       </div>
       <div class="grid">
@@ -193,16 +191,16 @@ footer{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 32px;f
 
   <!-- STEP 3 -->
   <section class="step" id="s3">
-    <div class="step-h"><span class="step-n">STEP 3</span><h2>사유 판정 · 연장일수 검토</h2><p>사유 유형을 고르면 연장 가능 여부, 지체일수 불산입, 계약금액 조정 대상이 표시됩니다. 인정기간이 겹치면 한 번만 셉니다. 주공정(CP)에 영향이 없는 사유는 인정일수에서 빠집니다.</p></div>
+    <div class="step-h"><span class="step-n">STEP 3</span><h2>사유 판정 · 연장일수 검토</h2><p>사유 유형을 고르면 연장 가능 여부와 지체일수 불산입 여부가 표시됩니다. 인정기간이 겹치면 한 번만 셉니다. 주공정(CP)에 영향이 없는 사유는 인정일수에서 빠집니다.</p></div>
     <div class="step-b">
       <div class="tbl-wrap"><table class="tbl-rules" id="t-reasons">
         <thead><tr>
           <th style="width:34px">#</th><th>사유 유형</th><th>내용</th><th>영향 시작</th><th>영향 종료</th><th class="num">신청일수</th>
-          <th>연장</th><th>불산입</th><th>금액조정</th><th>CP영향</th><th>판정</th><th>인정 시작</th><th>인정 종료</th><th></th>
+          <th>연장</th><th>불산입</th><th>CP영향</th><th>판정</th><th>인정 시작</th><th>인정 종료</th><th></th>
         </tr></thead>
         <tbody></tbody>
       </table></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="btn-add">사유 추가</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn secondary sm" type="button" id="btn-add">사유 추가</button></div>
       <div class="tl" id="timeline"></div>
       <div class="note" id="union-note"></div>
     </div>
@@ -215,7 +213,7 @@ footer{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 32px;f
       <div class="note" id="wx-src">기상자료를 불러오는 중입니다…</div>
       <div class="drop" id="wx-drop" hidden>
         <input type="file" id="wx-file" accept=".json,application/json" hidden>
-        <button class="btn sm" type="button" id="wx-pick">wx.json 선택</button>
+        <button class="btn secondary sm" type="button" id="wx-pick">wx.json 선택</button>
         <span>gongsagigan 저장소의 최신 wx.json을 직접 올릴 수도 있습니다.</span>
       </div>
       <div class="grid">
@@ -236,41 +234,26 @@ footer{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 32px;f
       </div>
       <div class="wx-scroll"><div class="wx-cal" id="wx-cal"></div></div>
       <div class="cmp" id="wx-cmp"></div>
-      <label style="display:flex;gap:10px;align-items:center;font-size:14px"><input type="checkbox" id="w-apply" checked> 평년 초과 일수를 이상기상(불가항력) 인정일수에 반영</label>
+      <label class="apply"><input type="checkbox" id="w-apply" checked> 평년 초과 일수를 이상기상(불가항력) 인정일수에 반영</label>
       <div class="note" id="wx-note"></div>
     </div>
   </section>
 
   <!-- STEP 5 -->
-  <section class="step" id="s5">
-    <div class="step-h"><span class="step-n">STEP 5</span><h2>계약금액 조정 · 지연배상금</h2><p>연장기간 간접비는 별도 「공기연장 간접비 산정기」에서 산정한 감독자 인정액을 옮겨 적습니다. 지연배상금은 실제 준공일이 변경 준공일을 넘긴 경우에만 생깁니다.</p></div>
-    <div class="step-b">
-      <div class="grid">
-        <label class="f">간접비 시공사 청구액(원)<input id="c-claim" type="text" inputmode="numeric"></label>
-        <label class="f">간접비 감독자 인정액(원)<input id="c-ok" type="text" inputmode="numeric"><span class="hint">공기연장 간접비 산정기 결과</span></label>
-        <label class="f">실제 준공일(예정)<input id="d-actual" type="date"></label>
-        <label class="f">지연배상금률(‰, 1일)<input id="d-rate" type="number" step="0.01" value="0.5"><span class="hint">공사 기본값 1천분의 0.5</span></label>
-      </div>
-      <div class="note" id="c-note"></div>
-    </div>
-  </section>
-
-  <!-- STEP 6 -->
   <section class="step" id="s6">
-    <div class="step-h"><span class="step-n">STEP 6</span><h2>후속조치 체크리스트</h2><p>변경계약 전후로 챙길 일입니다. 상황에 맞지 않는 항목은 자동으로 흐리게 표시됩니다.</p></div>
+    <div class="step-h"><span class="step-n">STEP 5</span><h2>후속조치 체크리스트</h2><p>변경계약 전후로 챙길 일입니다. 상황에 맞지 않는 항목은 자동으로 흐리게 표시됩니다.</p></div>
     <div class="step-b"><div class="checks" id="f-checks"></div></div>
   </section>
 
   <section class="step">
     <div class="step-h"><span class="step-n">근거</span><h2>관련 규정</h2></div>
     <div class="step-b law">
-      <div><b>「지방자치단체를 당사자로 하는 계약에 관한 법률 시행령」 제75조제1항</b> — 공사기간 변경 등 계약내용 변경으로 계약금액을 조정할 필요가 있으면 변경된 내용에 따라 실비를 초과하지 않는 범위에서 조정합니다.</div>
-      <div><b>같은 영 제90조제1항·제3항</b> — 계약상대자의 책임 없는 사유로 지체된 일수는 지체일수에 넣지 않으며, 지연배상금은 계약금액의 100분의 30이 한도입니다.</div>
-      <div><b>「지방자치단체 입찰 및 계약 집행기준」 공사계약 일반조건</b> — 계약기간 연장 청구 시기·절차와 불가항력 등 사유별 금액조정 여부는 현행 예규 원문으로 최종 확인하십시오. 이 도구의 판정은 검토 보조용입니다.</div>
+      <div><b>「지방자치단체를 당사자로 하는 계약에 관한 법률 시행령」 제90조제1항</b> — 계약상대자의 책임 없는 사유로 지체된 일수는 지체일수에 넣지 않습니다.</div>
+      <div><b>「지방자치단체 입찰 및 계약 집행기준」 공사계약 일반조건</b> — 계약기간 연장 청구 시기와 절차는 현행 예규 원문으로 최종 확인하십시오. 이 도구의 판정은 검토 보조용입니다.</div>
     </div>
   </section>
 </main>
-<footer>기상자료: 기상청 ASOS 일자료(기상자료개방포털) · seum8660/gongsagigan 저장소 wx.json(매월 자동 갱신). 입력값은 이 브라우저에만 남습니다.</footer>
+<footer><div class="foot-in">기상자료: 기상청 ASOS 일자료(기상자료개방포털) · seum8660/gongsagigan 저장소 wx.json(매월 자동 갱신). 입력값은 이 브라우저에만 남습니다.</div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -296,7 +279,7 @@ const TYPES={
 };
 const PL={o:['p-o','대상'],x:['p-x','불가'],c:['p-c','확인']};
 const PL_EXT={o:['p-o','가능'],x:['p-x','불가'],c:['p-c','확인']};
-const DOCS=[['d1','연장 청구 공문'],['d2','사유 입증자료 (지시서·공문·사진 등)'],['d3','변경 예정공정표'],['d4','감독자·건설사업관리단 검토의견'],['d5','간접비 산출 내역 (금액조정 청구 시)']];
+const DOCS=[['d1','연장 청구 공문'],['d2','사유 입증자료 (지시서·공문·사진 등)'],['d3','변경 예정공정표'],['d4','감독자·건설사업관리단 검토의견']];
 
 /* ---------- 상태 ---------- */
 const SAMPLE={
@@ -332,10 +315,6 @@ bindField('b-prev',()=>S.b.prev,v=>S.b.prev=num(v)||0);
 bindField('r-date',()=>S.r.date,v=>S.r.date=v);
 bindField('r-days',()=>S.r.days,v=>S.r.days=v);
 bindField('r-doc',()=>S.r.doc,v=>S.r.doc=v);
-bindField('c-claim',()=>S.c.claim,v=>S.c.claim=v,true);
-bindField('c-ok',()=>S.c.ok,v=>S.c.ok=v,true);
-bindField('d-actual',()=>S.c.actual,v=>S.c.actual=v);
-bindField('d-rate',()=>S.c.rate,v=>S.c.rate=num(v));
 
 $('r-docs').innerHTML=DOCS.map(([k,l])=>'<label><input type="checkbox" id="doc-'+k+'"'+(S.r.docs[k]?' checked':'')+'><span>'+l+'</span></label>').join('');
 DOCS.forEach(([k])=>$('doc-'+k).addEventListener('change',e=>{ S.r.docs[k]=e.target.checked; save(); render(); }));
@@ -351,7 +330,7 @@ function rowHTML(r,i){
   '<td><input data-k="s" id="rs-'+i+'" type="date" value="'+esc(r.s)+'"></td>'+
   '<td><input data-k="e" id="re-'+i+'" type="date" value="'+esc(r.e)+'"></td>'+
   '<td><input data-k="req" id="rq-'+i+'" type="number" min="0" value="'+(r.req??'')+'" style="width:70px"></td>'+
-  '<td>'+pl(PL_EXT,T.ext)+'</td><td>'+pl(PL,T.ld)+'</td><td>'+pl(PL,T.adj)+'</td>'+
+  '<td>'+pl(PL_EXT,T.ext)+'</td><td>'+pl(PL,T.ld)+'</td>'+
   '<td style="text-align:center"><input data-k="cp" id="rc-'+i+'" type="checkbox"'+(r.cp?' checked':'')+(dis?' disabled':'')+'></td>'+
   '<td><select data-k="ok" id="ro-'+i+'"'+(dis?' disabled':'')+'>'+['인정','부분인정','불인정'].map(v=>'<option'+(v===(dis?'불인정':r.ok)?' selected':'')+'>'+v+'</option>').join('')+'</select></td>'+
   '<td><input data-k="as" id="ras-'+i+'" type="date" value="'+esc(r.as)+'"'+(dis||r.ok==='불인정'?' disabled':'')+'></td>'+
@@ -486,12 +465,12 @@ function drawTimeline(){
   while(m<hi){ const dd=new Date(m*DAY); g+='<line x1="'+x(m)+'" x2="'+x(m)+'" y1="18" y2="'+(H-6)+'" stroke="var(--line)" stroke-dasharray="2 3"/><text x="'+(x(m)+3)+'" y="12" font-size="11" fill="var(--muted)">'+dd.getUTCFullYear()+'.'+(dd.getUTCMonth()+1)+'</text>'; m=Date.UTC(dd.getUTCFullYear(),dd.getUTCMonth()+1,1)/DAY; }
   let y=28;
   rows.forEach((r,i)=>{
-    const T=TYPES[r.t]; g+='<text x="0" y="'+(y+13)+'" font-size="12" fill="var(--sub)">'+(S.rows.indexOf(r)+1)+'. '+esc(T.n).slice(0,11)+'</text>';
+    const T=TYPES[r.t]; g+='<text x="0" y="'+(y+13)+'" font-size="13" fill="var(--sub)">'+(S.rows.indexOf(r)+1)+'. '+esc(T.n).slice(0,11)+'</text>';
     g+='<rect x="'+x(dn(r.s))+'" y="'+(y+3)+'" width="'+Math.max(2,x(dn(r.e)+1)-x(dn(r.s)))+'" height="16" rx="3" fill="none" stroke="var(--muted)" stroke-dasharray="3 2"/>';
     if(admissible(r)) g+='<rect x="'+x(dn(r.as))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(r.ae)+1)-x(dn(r.as)))+'" height="12" rx="2" fill="var(--primary)" opacity=".85"/>';
     y+=rowH;
   });
-  if(S.w.s&&S.w.e){ g+='<text x="0" y="'+(y+13)+'" font-size="12" fill="var(--sub)">기상 검토기간</text><rect x="'+x(dn(S.w.s))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(S.w.e)+1)-x(dn(S.w.s)))+'" height="12" rx="2" fill="var(--rain)" opacity=".35"/>'; y+=rowH; }
+  if(S.w.s&&S.w.e){ g+='<text x="0" y="'+(y+13)+'" font-size="13" fill="var(--sub)">기상 검토기간</text><rect x="'+x(dn(S.w.s))+'" y="'+(y+5)+'" width="'+Math.max(2,x(dn(S.w.e)+1)-x(dn(S.w.s)))+'" height="12" rx="2" fill="var(--rain)" opacity=".35"/>'; y+=rowH; }
   // 인정 합집합
   const U=[...unionDays()].sort((a,b)=>a-b); g+='<text x="0" y="'+(y+13)+'" font-size="12" font-weight="700" fill="var(--text)">인정(중첩 제외)</text>';
   let st=null,pv=null; const segs=[]; U.forEach(d=>{ if(st==null){st=d;pv=d;} else if(d===pv+1) pv=d; else { segs.push([st,pv]); st=d; pv=d; } }); if(st!=null) segs.push([st,pv]);
@@ -531,10 +510,8 @@ function followups(R){
     ['f3','공사손해보험 등 보험기간 연장',R.okDays>0,'보험증권 기간 변경 제출'],
     ['f4','변경 예정공정표 제출·승인',R.okDays>0,'주공정 조정 내용 확인'],
     ['f5','건설사업관리(감리) 용역 기간 연장 검토',R.okDays>0,'용역 계약기간·대가 조정 필요 여부'],
-    ['f6','간접비 계약금액 조정 (실비 범위)',R.adjRows.length>0||R.adjCheck>0,'공기연장 간접비 산정기 결과 반영'],
     ['f7','하도급 계약기간 변경 통보 확인',R.okDays>0,'하도급 공사기간 연동 여부'],
-    ['f8','에듀파인 계약정보 변경 등록',R.okDays>0,'계약기간·금액 변경 입력'],
-    ['f9','지연배상금 부과 검토',R.late>0,'지체 '+(R.late||0)+'일, '+won(R.ld)]
+    ['f8','에듀파인 계약정보 변경 등록',R.okDays>0,'계약기간 변경 입력']
   ];
   $('f-checks').innerHTML=L.map(([k,t,on,why])=>'<label style="'+(on?'':'opacity:.45')+'"><input type="checkbox" id="fc-'+k+'"'+(S.f[k]?' checked':'')+'><span>'+t+'<span class="why">'+(on?why:'해당 없음')+'</span></span></label>').join('');
   L.forEach(([k])=>$('fc-'+k).addEventListener('change',e=>{ S.f[k]=e.target.checked; save(); }));
@@ -551,13 +528,9 @@ function render(){
   $('k-ok-s').textContent='기간 사유 '+R.unionN+'일 + 이상기상 '+R.wxDays+'일';
   $('k-end').textContent=R.newEnd!=null?dk(R.newEnd):'–';
   $('k-end-s').textContent='현재 준공일 '+dk(R.end);
-  $('k-ld').textContent=R.ld==null?'–':(R.late>0?won(R.ld):'없음');
-  $('k-ld-s').textContent=R.ld==null?'실제 준공일 입력 시 산정':(R.late>0?'지체 '+R.late+'일':'변경 준공일 안에 준공');
   const v=$('sum-verdict'); v.className='verdict '+R.verdict; v.textContent=R.vt;
   const fl=[];
   if(R.timely===true) fl.push(['ok','청구시기 적정']); else if(R.timely===false) fl.push(['bad','계약기간 경과 후 청구']);
-  if(R.adjRows.length) fl.push(['ok','계약금액 조정 대상 '+R.adjRows.length+'건']);
-  if(R.adjCheck) fl.push(['warn','금액조정 여부 확인 '+R.adjCheck+'건']);
   if(R.sumAdm>R.unionN) fl.push(['warn','기간 중첩 '+(R.sumAdm-R.unionN)+'일 제외']);
   const miss=DOCS.filter(([k])=>!S.r.docs[k]).length; if(miss) fl.push(['warn','증빙 미제출 '+miss+'종']);
   if(S.rows.some(r=>r.t!=='contractor'&&r.ok!=='불인정'&&!r.cp)) fl.push(['','CP 영향 없는 사유 제외']);
@@ -572,13 +545,6 @@ function render(){
   u.className='note'; u.innerHTML='인정 사유 '+S.rows.filter(admissible).length+'건의 인정기간 합계 '+R.sumAdm+'일 중 겹치는 '+(R.sumAdm-R.unionN)+'일을 빼고 <b>'+R.unionN+'일</b>을 인정합니다.';
   drawTimeline();
   drawWx(R.W);
-  // STEP5
-  const cl=num(S.c.claim), ok=num(S.c.ok); const cn=$('c-note');
-  let t=[];
-  if(!R.adjRows.length&&!R.adjCheck) t.push('금액조정 대상 사유가 없습니다.');
-  else { t.push('금액조정 대상 사유가 있습니다. 연장된 기간에 대해 실비를 넘지 않는 범위에서 조정합니다.'); if(ok!=null) t.push('간접비 인정액 '+won(ok)+(cl!=null?' (청구 대비 '+won(ok-cl)+')':'')+'.'); else t.push('간접비 인정액을 입력하십시오.'); }
-  if(R.late!=null) t.push(R.late>0?'실제 준공일이 변경 준공일보다 '+R.late+'일 늦어 지연배상금 '+won(R.ld)+'이 산정됩니다'+(R.ld>=R.ldCap?' (계약금액 30% 한도 적용)':'')+'.':'실제 준공일이 변경 준공일 이내여서 지연배상금이 없습니다.');
-  cn.textContent=t.join(' ');
   followups(R);
 }
 
@@ -624,7 +590,6 @@ function refreshInputs(){
   const set=(id,v,amt)=>{ $(id).value=(amt&&v!=null&&v!=='')?Math.round(v).toLocaleString('ko-KR'):(v??''); };
   set('b-name',S.b.name); set('b-vendor',S.b.vendor); set('b-amt',S.b.amt,true); set('b-start',S.b.start); set('b-end',S.b.end); set('b-round',S.b.round); set('b-prev',S.b.prev);
   set('r-date',S.r.date); set('r-days',S.r.days); set('r-doc',S.r.doc);
-  set('c-claim',S.c.claim,true); set('c-ok',S.c.ok,true); set('d-actual',S.c.actual); set('d-rate',S.c.rate);
   set('w-s',S.w.s); set('w-e',S.w.e); set('w-req',S.w.req); if(WX&&WX.stations[S.w.stn]) $('w-stn').value=S.w.stn;
   ['rain','wind','hot','cold','snow'].forEach(k=>set('th-'+k,S.w.th[k])); $('w-apply').checked=S.w.apply!==false;
   DOCS.forEach(([k])=>$('doc-'+k).checked=!!S.r.docs[k]);
@@ -669,11 +634,9 @@ async function exportXlsx(){
   const W=R.W;
   if(W.ok){ kv([['관측지점',W.stn+(WX&&WX.updated?' (자료 '+WX.updated+' 기준)':'')],['검토기간',dk(W.s)+' ~ '+dk(W.e)+' ('+W.span+'일)'],['작업제한 기준','강우 '+W.t.rain+'mm↑ · 순간풍속 '+W.t.wind+'m/s↑ · 최고기온 '+W.t.hot+'℃↑ / '+W.t.cold+'℃↓ · 신적설 '+W.t.snow+'cm↑'],['실측 작업제한일',W.actual+'일 ('+FC.filter(k=>W.byF[k]).map(k=>FN[k]+' '+W.byF[k]).join(', ')+')'],['평년 비작업일수',W.expected+'일'],['평년 초과(이상기상)',W.excess+'일'],['신청 기상일수',(num(S.w.req)??'–')+'일'],['반영 인정일수',R.wxDays+'일'+(W.overlap?' (다른 사유와 중첩 '+W.overlap+'일 제외)':'')]]); }
   else kv([['기상 검토','해당 없음']]);
-  sec('5. 계약금액 조정 · 지연배상금');
-  kv([['금액조정 대상',R.adjRows.length+'건'+(R.adjCheck?' / 확인 필요 '+R.adjCheck+'건':'')],['간접비 청구액',num(S.c.claim),'#,##0"원"'],['간접비 인정액',num(S.c.ok),'#,##0"원"'],['실제 준공일',dk(dn(S.c.actual))],['지연배상금',R.ld==null?'–':(R.late>0?Math.round(R.ld).toLocaleString('ko-KR')+'원 (지체 '+R.late+'일 × '+S.c.rate+'‰)':'없음')]]);
-  sec('6. 후속조치');
+  sec('5. 후속조치');
   followups(R).forEach(([k,tt,on,why])=>{ ws.mergeCells(r,1,r,1); ws.getCell(r,1).value=S.f[k]?'■':'□'; ws.getCell(r,1).alignment={horizontal:'center'}; ws.mergeCells(r,2,r,5); ws.getCell(r,2).value=tt; ws.mergeCells(r,6,r,10); ws.getCell(r,6).value=on?why:'해당 없음'; [1,2,6].forEach(j=>{ ws.getCell(r,j).font=font({color:{argb:on?'FF212121':'FF9CA3AF'}}); ws.getCell(r,j).border=border; }); r++; });
-  r++; ws.mergeCells(r,1,r,10); ws.getCell(r,1).value='근거: 지방계약법 시행령 제75조제1항(실비 범위 금액조정), 제90조제1항·제3항(책임 없는 지체일수 불산입, 지연배상금 30% 한도). 사유별 금액조정 여부는 지방자치단체 입찰 및 계약 집행기준 공사계약 일반조건 원문 확인 필요.'; ws.getCell(r,1).font=font({size:8,color:{argb:'FF6B7280'}}); ws.getCell(r,1).alignment={wrapText:true}; ws.getRow(r).height=30;
+  r++; ws.mergeCells(r,1,r,10); ws.getCell(r,1).value='근거: 지방계약법 시행령 제90조제1항(계약상대자 책임 없는 지체일수 불산입). 계약기간 연장 청구 절차는 지방자치단체 입찰 및 계약 집행기준 공사계약 일반조건 원문 확인 필요.'; ws.getCell(r,1).font=font({size:8,color:{argb:'FF6B7280'}}); ws.getCell(r,1).alignment={wrapText:true}; ws.getRow(r).height=30;
   // 기상 일자료 시트
   if(W.ok){ const w2=wb.addWorksheet('기상일자료'); w2.columns=[{header:'일자',width:12},{header:'강수(mm)',width:10},{header:'순간풍속(m/s)',width:13},{header:'최고기온(℃)',width:12},{header:'최저기온(℃)',width:12},{header:'신적설(cm)',width:11},{header:'판정',width:16},{header:'비고',width:14}];
     w2.getRow(1).eachCell(c=>{ c.font=font({bold:true,color:{argb:'FFFFFFFF'}}); c.fill={type:'pattern',pattern:'solid',fgColor:{argb:NAVY}}; });
